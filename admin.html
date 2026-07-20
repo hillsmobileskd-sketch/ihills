@@ -85,6 +85,9 @@
       <label>Image URL (optional — free options below)</label>
       <input id="pImage" placeholder="https://...">
       <div class="sub" style="margin:-6px 0 12px">Free image hosting: imgbb.com par photo upload karke uska "direct link" yahan paste karein. (Firebase Storage is task ke liye avoid kiya hai kyunki usmein billing account chahiye.)</div>
+      <label>Extra Images / Gallery (optional — ek line mein ek Direct Link)</label>
+      <textarea id="pGallery" rows="3" placeholder="https://i.ibb.co/xxxx/photo2.jpg&#10;https://i.ibb.co/xxxx/photo3.jpg"></textarea>
+      <div class="sub" style="margin:-6px 0 12px">Website par customer in sabko ek chhote slider mein dekh payega, upar wali "Image URL" hamesha pehli/main photo rahegi.</div>
       <label><input type="checkbox" id="pStock" style="width:auto;margin-right:6px" checked>In stock (website par dikhega)</label>
       <div style="margin-top:10px">
         <button id="saveBtn">Save Product</button>
@@ -97,6 +100,29 @@
       <table>
         <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Source</th><th>Status</th><th>Actions</th></tr></thead>
         <tbody id="productRows"><tr><td colspan="6" style="color:var(--muted)">Loading…</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2 id="bannerFormTitle" style="font-size:15px;margin:0 0 4px">Homepage Banners (Hot Deals Slider)</h2>
+      <div class="sub" style="margin-bottom:12px">Yahan jo banners add karenge, wo website ke top par ek-ek kar ke ghumte rahenge (auto-slide). Koi banner na ho to website apne aap default banner dikhayegi.</div>
+      <input type="hidden" id="bId">
+      <label>Banner Image URL *</label>
+      <input id="bImage" placeholder="https://i.ibb.co/xxxx/banner.jpg">
+      <div class="row">
+        <div><label>Title *</label><input id="bTitle" placeholder="e.g. iPhone 13 par Hot Deal!"></div>
+        <div><label>Order (chhota number pehle dikhega)</label><input id="bOrder" type="number" value="1"></div>
+      </div>
+      <label>Subtitle (optional)</label>
+      <input id="bSubtitle" placeholder="e.g. Limited stock — is week hi valid">
+      <label><input type="checkbox" id="bActive" style="width:auto;margin-right:6px" checked>Active (website par dikhega)</label>
+      <div style="margin-top:10px">
+        <button id="bannerSaveBtn">Save Banner</button>
+        <button class="outline" id="bannerCancelEdit" style="display:none">Cancel Edit</button>
+      </div>
+      <table style="margin-top:16px">
+        <thead><tr><th>Preview</th><th>Title</th><th>Order</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="bannerRows"><tr><td colspan="5" style="color:var(--muted)">Loading…</td></tr></tbody>
       </table>
     </div>
 
@@ -134,6 +160,7 @@ auth.onAuthStateChanged(async user=>{
   document.getElementById('adminApp').style.display='block';
   loadProducts();
   loadStoresList();
+  loadBanners();
 });
 
 document.getElementById('loginBtn').onclick = async ()=>{
@@ -187,6 +214,7 @@ function editProduct(id){
   document.getElementById('pBadge').value = p.badge||'';
   document.getElementById('pDesc').value = p.desc||'';
   document.getElementById('pImage').value = p.image||'';
+  document.getElementById('pGallery').value = Array.isArray(p.gallery) ? p.gallery.join('\n') : '';
   document.getElementById('pStock').checked = !!p.inStock;
   document.getElementById('formTitle').textContent = 'Edit Product';
   document.getElementById('cancelEdit').style.display = 'inline-block';
@@ -197,7 +225,7 @@ document.getElementById('cancelEdit').onclick = resetForm;
 function resetForm(){
   document.getElementById('pId').value = '';
   document.getElementById('pSourceKey').value = '';
-  ['pName','pMrp','pBadge','pDesc','pImage'].forEach(id=>document.getElementById(id).value='');
+  ['pName','pMrp','pBadge','pDesc','pImage','pGallery'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('pPrice').value = '';
   document.getElementById('pCat').value = 'mobile';
   document.getElementById('pStock').checked = true;
@@ -216,6 +244,7 @@ document.getElementById('saveBtn').onclick = async ()=>{
     badge: document.getElementById('pBadge').value.trim(),
     desc: document.getElementById('pDesc').value.trim(),
     image: document.getElementById('pImage').value.trim(),
+    gallery: document.getElementById('pGallery').value.split('\n').map(s=>s.trim()).filter(Boolean),
     inStock: document.getElementById('pStock').checked,
     createdAt: new Date().toISOString()
   };
@@ -303,6 +332,7 @@ function renderImportList(){
       <input class="imp-mrp wide" type="number" value="${existing?existing.mrp||'':''}" placeholder="MRP (optional)">
       <input class="imp-badge wide" value="${existing?esc(existing.badge||''):''}" placeholder="Badge (optional)">
       <input class="imp-image wide" value="${existing?esc(existing.image||''):''}" placeholder="Image URL (optional)">
+      <input class="imp-desc wide" value="${existing?esc(existing.desc||''):''}" placeholder="Description (optional)">
       ${existing ? '<span class="tag done">Synced ✓</span>' : ''}
       <button data-import="${esc(c.sourceKey)}">${existing ? 'Update' : 'Import'}</button>
     </div>`;
@@ -318,10 +348,12 @@ async function doImport(sourceKey){
   const mrp = Number(row.querySelector('.imp-mrp').value)||0;
   const badge = row.querySelector('.imp-badge').value.trim();
   const image = row.querySelector('.imp-image').value.trim();
+  const desc = row.querySelector('.imp-desc').value.trim();
   if(!price){ alert('Price zaroor bharein.'); return; }
   const existing = PRODUCTS.find(p=>p.sourceKey===sourceKey);
   const data = {
-    name: cand.name, category: cand.category, price, mrp, badge, image,
+    name: cand.name, category: cand.category, price, mrp, badge, image, desc,
+    gallery: existing && Array.isArray(existing.gallery) ? existing.gallery : [],
     sourceKey, inStock: true, createdAt: existing ? existing.createdAt : new Date().toISOString()
   };
   try{
@@ -329,6 +361,88 @@ async function doImport(sourceKey){
     else await db.collection('onlineProducts').add(data);
     renderImportList(); // will update to "Synced ✓" once PRODUCTS snapshot refreshes
   }catch(err){ alert('Import fail hua: ' + err.message); }
+}
+
+/* ================= Homepage Banners ================= */
+let BANNERS = [];
+
+function loadBanners(){
+  db.collection('banners').orderBy('order','asc').onSnapshot(snap=>{
+    BANNERS = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    renderBannerRows();
+  }, err=>{
+    document.getElementById('bannerRows').innerHTML = '<tr><td colspan="5" style="color:var(--red)">Banners load nahi ho paaye: '+esc(err.message)+'</td></tr>';
+    console.error(err);
+  });
+}
+
+function renderBannerRows(){
+  const tb = document.getElementById('bannerRows');
+  if(!BANNERS.length){ tb.innerHTML = '<tr><td colspan="5" style="color:var(--muted)">Koi banner add nahi kiya abhi tak.</td></tr>'; return; }
+  tb.innerHTML = BANNERS.map(b=>`
+    <tr>
+      <td>${b.image ? `<img src="${esc(b.image)}" style="width:56px;height:36px;object-fit:cover;border-radius:6px;border:1px solid var(--line)">` : '<span class="sub">No image</span>'}</td>
+      <td>${esc(b.title)}</td>
+      <td>${b.order!=null?b.order:''}</td>
+      <td><span class="pill ${b.active?'in':'out'}">${b.active?'Active':'Hidden'}</span></td>
+      <td class="actions">
+        <button class="outline" data-bedit="${b.id}">Edit</button>
+        <button class="danger" data-bdel="${b.id}">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+  document.querySelectorAll('[data-bedit]').forEach(btn=>btn.onclick=()=>editBanner(btn.dataset.bedit));
+  document.querySelectorAll('[data-bdel]').forEach(btn=>btn.onclick=()=>deleteBanner(btn.dataset.bdel));
+}
+
+function editBanner(id){
+  const b = BANNERS.find(x=>x.id===id); if(!b) return;
+  document.getElementById('bId').value = b.id;
+  document.getElementById('bImage').value = b.image||'';
+  document.getElementById('bTitle').value = b.title||'';
+  document.getElementById('bSubtitle').value = b.subtitle||'';
+  document.getElementById('bOrder').value = b.order!=null ? b.order : 1;
+  document.getElementById('bActive').checked = !!b.active;
+  document.getElementById('bannerFormTitle').textContent = 'Edit Banner';
+  document.getElementById('bannerCancelEdit').style.display = 'inline-block';
+  window.scrollTo({top:document.getElementById('bImage').getBoundingClientRect().top + window.scrollY - 80, behavior:'smooth'});
+}
+
+document.getElementById('bannerCancelEdit').onclick = resetBannerForm;
+function resetBannerForm(){
+  document.getElementById('bId').value = '';
+  document.getElementById('bImage').value = '';
+  document.getElementById('bTitle').value = '';
+  document.getElementById('bSubtitle').value = '';
+  document.getElementById('bOrder').value = 1;
+  document.getElementById('bActive').checked = true;
+  document.getElementById('bannerFormTitle').textContent = 'Homepage Banners (Hot Deals Slider)';
+  document.getElementById('bannerCancelEdit').style.display = 'none';
+}
+
+document.getElementById('bannerSaveBtn').onclick = async ()=>{
+  const image = document.getElementById('bImage').value.trim();
+  const title = document.getElementById('bTitle').value.trim();
+  if(!image || !title){ alert('Banner image aur title zaroor bharein.'); return; }
+  const data = {
+    image, title,
+    subtitle: document.getElementById('bSubtitle').value.trim(),
+    order: Number(document.getElementById('bOrder').value)||1,
+    active: document.getElementById('bActive').checked,
+    createdAt: new Date().toISOString()
+  };
+  const id = document.getElementById('bId').value;
+  try{
+    if(id) await db.collection('banners').doc(id).set(data, {merge:true});
+    else await db.collection('banners').add(data);
+    resetBannerForm();
+  }catch(err){ alert('Banner save fail hua: ' + err.message); }
+};
+
+async function deleteBanner(id){
+  if(!confirm('Yeh banner delete karna hai?')) return;
+  try{ await db.collection('banners').doc(id).delete(); }
+  catch(err){ alert('Delete fail hua: ' + err.message); }
 }
 </script>
 </body>
