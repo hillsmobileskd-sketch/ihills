@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>iHILLS Store — Admin (Owner Only)</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--ink:#241F14;--accent:#B8860B;--accent2:#D4AF37;--paper:#F8F5EC;--card:#FFFFFF;--line:#E9E1C8;--muted:#7A6F55;--red:#C23A3A;--green:#1F9D55;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);}
+  h1,h2,.brand{font-family:'Sora',sans-serif;}
+  .wrap{max-width:920px;margin:0 auto;padding:24px 18px 60px;}
+  .brand{font-size:20px;font-weight:800;margin-bottom:4px;}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:22px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:16px;}
+  label{font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:4px;}
+  input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-size:13.5px;font-family:inherit;margin-bottom:12px;background:#fff;color:var(--ink);}
+  .row{display:flex;gap:12px;flex-wrap:wrap;}
+  .row > div{flex:1;min-width:160px;}
+  button{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#211C0E;border:none;padding:10px 18px;border-radius:9px;font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit;}
+  button.outline{background:transparent;border:1px solid var(--line);color:var(--muted);}
+  button.danger{background:var(--red);color:#fff;}
+  table{width:100%;border-collapse:collapse;font-size:13px;}
+  th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);}
+  th{color:var(--muted);font-size:11.5px;text-transform:uppercase;}
+  .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;}
+  .pill.in{background:#E6F7EE;color:var(--green);}
+  .pill.out{background:#FDEAEA;color:var(--red);}
+  #loginBox{max-width:340px;margin:80px auto;}
+  .actions button{padding:5px 10px;font-size:12px;margin-right:4px;}
+  .imp-row{display:flex;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+  .imp-row .imp-name{flex:1;min-width:160px;font-size:13.5px;font-weight:600;}
+  .imp-row .imp-sub{font-size:11.5px;color:var(--muted);display:block;font-weight:400;margin-top:2px;}
+  .imp-row input{width:90px;margin:0;padding:7px 8px;font-size:12.5px;}
+  .imp-row input.wide{width:130px;}
+  .imp-row button{padding:7px 12px;font-size:12px;white-space:nowrap;}
+  .tag{font-size:10.5px;padding:2px 8px;border-radius:20px;background:var(--paper);color:var(--muted);border:1px solid var(--line);}
+  .tag.done{background:#E6F7EE;color:var(--green);border-color:transparent;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div id="loginBox" class="card" style="display:none">
+    <div class="brand">iHILLS Store Admin</div>
+    <div class="sub">Sirf Owner login se hi products manage kar sakte hain (same login jo ERP mein use hota hai).</div>
+    <label>Email</label><input id="loginEmail" type="email">
+    <label>Password</label><input id="loginPass" type="password">
+    <button id="loginBtn" style="width:100%">Login</button>
+    <div id="loginErr" style="color:var(--red);font-size:12.5px;margin-top:8px"></div>
+  </div>
+
+  <div id="adminApp" style="display:none">
+    <div class="brand">iHILLS Store — Product Manager</div>
+    <div class="sub">Yahan add/edit kiya hua product turant aapki live website (index.html) par dikhega.</div>
+
+    <div class="card">
+      <h2 style="font-size:15px;margin:0 0 4px">Import from ERP Stock</h2>
+      <div class="sub" style="margin-bottom:12px">Apne ERP ke mobiles/accessories stock se seedha import karein — dobara type nahi karna padega. Sirf website-wala price/photo/badge add kar dijiye.</div>
+      <div class="row">
+        <div><label>Store</label><select id="storeSelect"><option value="">-- Select store --</option></select></div>
+        <div style="display:flex;align-items:flex-end"><button id="loadStockBtn" style="width:100%">Load Stock</button></div>
+      </div>
+      <div id="importList"></div>
+    </div>
+
+    <div class="card">
+      <h2 id="formTitle" style="font-size:15px;margin:0 0 12px">Add New Product (Manual)</h2>
+      <input type="hidden" id="pId">
+      <input type="hidden" id="pSourceKey">
+      <div class="row">
+        <div><label>Product name *</label><input id="pName" placeholder="e.g. iPhone 12 128GB (Refurb)"></div>
+        <div><label>Category *</label>
+          <select id="pCat"><option value="mobile">Mobile</option><option value="accessory">Accessory</option></select>
+        </div>
+      </div>
+      <div class="row">
+        <div><label>Selling price (₹) *</label><input id="pPrice" type="number"></div>
+        <div><label>MRP / strike price (₹, optional)</label><input id="pMrp" type="number"></div>
+        <div><label>Badge (optional)</label><input id="pBadge" placeholder="e.g. Hot Deal, New, Limited"></div>
+      </div>
+      <label>Short description (optional)</label>
+      <input id="pDesc" placeholder="e.g. 128GB · Battery health 89% · 6 month warranty">
+      <label>Image URL (optional — free options below)</label>
+      <input id="pImage" placeholder="https://...">
+      <div class="sub" style="margin:-6px 0 12px">Free image hosting: imgbb.com par photo upload karke uska "direct link" yahan paste karein. (Firebase Storage is task ke liye avoid kiya hai kyunki usmein billing account chahiye.)</div>
+      <label><input type="checkbox" id="pStock" style="width:auto;margin-right:6px" checked>In stock (website par dikhega)</label>
+      <div style="margin-top:10px">
+        <button id="saveBtn">Save Product</button>
+        <button class="outline" id="cancelEdit" style="display:none">Cancel Edit</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:15px;margin:0 0 12px">All Products</h2>
+      <table>
+        <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Source</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="productRows"><tr><td colspan="6" style="color:var(--muted)">Loading…</td></tr></tbody>
+      </table>
+    </div>
+
+    <button class="outline" id="logoutBtn">Logout</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCk_K4KAieJdfABIhOBz9HEsiVBVougyXI",
+  authDomain: "hillsmobileerp.firebaseapp.com",
+  projectId: "hillsmobileerp",
+  storageBucket: "hillsmobileerp.firebasestorage.app",
+  messagingSenderId: "153415150787",
+  appId: "1:153415150787:web:7180feacf04987f4910676"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+let PRODUCTS = [];
+
+auth.onAuthStateChanged(async user=>{
+  if(!user){ document.getElementById('loginBox').style.display='block'; document.getElementById('adminApp').style.display='none'; return; }
+  // Confirm this user is the Owner (matches your ERP's role system)
+  const udoc = await db.collection('users').doc(user.uid).get();
+  if(!udoc.exists || udoc.data().role !== 'owner'){
+    document.getElementById('loginErr').textContent = 'Yeh account Owner nahi hai. Sirf Owner login se store manage ho sakta hai.';
+    auth.signOut();
+    return;
+  }
+  document.getElementById('loginBox').style.display='none';
+  document.getElementById('adminApp').style.display='block';
+  loadProducts();
+  loadStoresList();
+});
+
+document.getElementById('loginBtn').onclick = async ()=>{
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  document.getElementById('loginErr').textContent = '';
+  try{ await auth.signInWithEmailAndPassword(email, pass); }
+  catch(err){ document.getElementById('loginErr').textContent = 'Login fail: ' + err.message; }
+};
+document.getElementById('logoutBtn').onclick = ()=>auth.signOut();
+
+function fmt(n){ return '₹'+Number(n||0).toLocaleString('en-IN'); }
+function esc(s){ return (s||'').toString().replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+function loadProducts(){
+  db.collection('onlineProducts').orderBy('createdAt','desc').onSnapshot(snap=>{
+    PRODUCTS = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    renderRows();
+  });
+}
+
+function renderRows(){
+  const tb = document.getElementById('productRows');
+  if(!PRODUCTS.length){ tb.innerHTML = '<tr><td colspan="6" style="color:var(--muted)">Koi product add nahi kiya abhi tak.</td></tr>'; return; }
+  tb.innerHTML = PRODUCTS.map(p=>`
+    <tr>
+      <td>${esc(p.name)}</td>
+      <td>${esc(p.category)}</td>
+      <td>${fmt(p.price)}</td>
+      <td>${p.sourceKey ? '<span class="tag done">Synced</span>' : '<span class="tag">Manual</span>'}</td>
+      <td><span class="pill ${p.inStock?'in':'out'}">${p.inStock?'In stock':'Hidden'}</span></td>
+      <td class="actions">
+        <button class="outline" data-edit="${p.id}">Edit</button>
+        <button class="danger" data-del="${p.id}">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+  document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>editProduct(b.dataset.edit));
+  document.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>deleteProduct(b.dataset.del));
+  if(window._pendingImportRender) renderImportList(); // keep import list's "already synced" tags fresh
+}
+
+function editProduct(id){
+  const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
+  document.getElementById('pId').value = p.id;
+  document.getElementById('pSourceKey').value = p.sourceKey||'';
+  document.getElementById('pName').value = p.name||'';
+  document.getElementById('pCat').value = p.category||'mobile';
+  document.getElementById('pPrice').value = p.price||'';
+  document.getElementById('pMrp').value = p.mrp||'';
+  document.getElementById('pBadge').value = p.badge||'';
+  document.getElementById('pDesc').value = p.desc||'';
+  document.getElementById('pImage').value = p.image||'';
+  document.getElementById('pStock').checked = !!p.inStock;
+  document.getElementById('formTitle').textContent = 'Edit Product';
+  document.getElementById('cancelEdit').style.display = 'inline-block';
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+document.getElementById('cancelEdit').onclick = resetForm;
+function resetForm(){
+  document.getElementById('pId').value = '';
+  document.getElementById('pSourceKey').value = '';
+  ['pName','pMrp','pBadge','pDesc','pImage'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('pPrice').value = '';
+  document.getElementById('pCat').value = 'mobile';
+  document.getElementById('pStock').checked = true;
+  document.getElementById('formTitle').textContent = 'Add New Product (Manual)';
+  document.getElementById('cancelEdit').style.display = 'none';
+}
+
+document.getElementById('saveBtn').onclick = async ()=>{
+  const name = document.getElementById('pName').value.trim();
+  const price = Number(document.getElementById('pPrice').value);
+  if(!name || !price){ alert('Product name aur price zaroor bharein.'); return; }
+  const sourceKey = document.getElementById('pSourceKey').value.trim();
+  const data = {
+    name, category: document.getElementById('pCat').value,
+    price, mrp: Number(document.getElementById('pMrp').value)||0,
+    badge: document.getElementById('pBadge').value.trim(),
+    desc: document.getElementById('pDesc').value.trim(),
+    image: document.getElementById('pImage').value.trim(),
+    inStock: document.getElementById('pStock').checked,
+    createdAt: new Date().toISOString()
+  };
+  if(sourceKey) data.sourceKey = sourceKey;
+  const id = document.getElementById('pId').value;
+  try{
+    if(id) await db.collection('onlineProducts').doc(id).set(data, {merge:true});
+    else await db.collection('onlineProducts').add(data);
+    resetForm();
+  }catch(err){ alert('Save fail hua: ' + err.message); }
+};
+
+async function deleteProduct(id){
+  if(!confirm('Yeh product delete karna hai?')) return;
+  try{ await db.collection('onlineProducts').doc(id).delete(); }
+  catch(err){ alert('Delete fail hua: ' + err.message); }
+}
+
+/* ================= Import from ERP stock ================= */
+let IMPORT_CANDIDATES = [];
+
+async function loadStoresList(){
+  try{
+    const snap = await db.collection('stores').orderBy('createdAt','asc').get();
+    const sel = document.getElementById('storeSelect');
+    sel.innerHTML = '<option value="">-- Select store --</option>' +
+      snap.docs.map(d=>`<option value="${d.id}">${esc(d.data().name||d.id)}</option>`).join('');
+  }catch(err){ console.error('Could not load stores list', err); }
+}
+
+document.getElementById('loadStockBtn').onclick = async ()=>{
+  const storeId = document.getElementById('storeSelect').value;
+  if(!storeId){ alert('Pehle store select karein.'); return; }
+  const listEl = document.getElementById('importList');
+  listEl.innerHTML = '<div class="sub">Stock load ho raha hai…</div>';
+  window._pendingImportRender = true;
+  try{
+    const [mobSnap, accSnap] = await Promise.all([
+      db.collection('stores').doc(storeId).collection('mobiles').where('status','==','instock').get(),
+      db.collection('stores').doc(storeId).collection('accessories').get()
+    ]);
+
+    // Group mobiles by brand+model (each unit has its own IMEI, we show one line per model)
+    const mobileGroups = {};
+    mobSnap.docs.forEach(d=>{
+      const m = d.data();
+      const key = 'mobile:' + (m.brand||'').trim().toLowerCase() + '|' + (m.model||'').trim().toLowerCase();
+      if(!mobileGroups[key]) mobileGroups[key] = { sourceKey:key, name: [m.brand,m.model].filter(Boolean).join(' ') || 'Mobile', prices:[], count:0 };
+      mobileGroups[key].count++;
+      if(m.salePrice) mobileGroups[key].prices.push(m.salePrice);
+    });
+
+    IMPORT_CANDIDATES = Object.values(mobileGroups).map(g=>({
+      sourceKey: g.sourceKey, category:'mobile', name: g.name,
+      suggestedPrice: g.prices.length ? Math.min(...g.prices) : 0,
+      sub: `${g.count} unit${g.count!==1?'s':''} in stock in this store`
+    }));
+
+    accSnap.docs.forEach(d=>{
+      const a = d.data();
+      if(!(a.qty > 0)) return; // skip zero-stock accessories
+      IMPORT_CANDIDATES.push({
+        sourceKey: 'accessory:' + d.id, category:'accessory', name: a.name,
+        suggestedPrice: a.salePrice||0,
+        sub: `${a.qty} in stock${a.category ? ' · '+a.category : ''}`
+      });
+    });
+
+    renderImportList();
+  }catch(err){
+    listEl.innerHTML = '<div class="sub" style="color:var(--red)">Stock load nahi ho paaya: '+esc(err.message)+'</div>';
+    console.error(err);
+  }
+};
+
+function renderImportList(){
+  const listEl = document.getElementById('importList');
+  if(!IMPORT_CANDIDATES.length){ listEl.innerHTML = '<div class="sub">Is store mein abhi koi in-stock item nahi mila.</div>'; return; }
+  listEl.innerHTML = IMPORT_CANDIDATES.map(c=>{
+    const existing = PRODUCTS.find(p=>p.sourceKey===c.sourceKey);
+    return `
+    <div class="imp-row" data-key="${esc(c.sourceKey)}">
+      <div class="imp-name">${esc(c.name)}<span class="imp-sub">${esc(c.sub)}</span></div>
+      <input class="imp-price" type="number" value="${existing?existing.price:c.suggestedPrice}" placeholder="Price" title="Website selling price">
+      <input class="imp-mrp wide" type="number" value="${existing?existing.mrp||'':''}" placeholder="MRP (optional)">
+      <input class="imp-badge wide" value="${existing?esc(existing.badge||''):''}" placeholder="Badge (optional)">
+      <input class="imp-image wide" value="${existing?esc(existing.image||''):''}" placeholder="Image URL (optional)">
+      ${existing ? '<span class="tag done">Synced ✓</span>' : ''}
+      <button data-import="${esc(c.sourceKey)}">${existing ? 'Update' : 'Import'}</button>
+    </div>`;
+  }).join('');
+  document.querySelectorAll('[data-import]').forEach(b=>b.onclick=()=>doImport(b.dataset.import));
+}
+
+async function doImport(sourceKey){
+  const cand = IMPORT_CANDIDATES.find(c=>c.sourceKey===sourceKey);
+  const row = document.querySelector(`.imp-row[data-key="${CSS.escape(sourceKey)}"]`);
+  if(!cand || !row) return;
+  const price = Number(row.querySelector('.imp-price').value)||0;
+  const mrp = Number(row.querySelector('.imp-mrp').value)||0;
+  const badge = row.querySelector('.imp-badge').value.trim();
+  const image = row.querySelector('.imp-image').value.trim();
+  if(!price){ alert('Price zaroor bharein.'); return; }
+  const existing = PRODUCTS.find(p=>p.sourceKey===sourceKey);
+  const data = {
+    name: cand.name, category: cand.category, price, mrp, badge, image,
+    sourceKey, inStock: true, createdAt: existing ? existing.createdAt : new Date().toISOString()
+  };
+  try{
+    if(existing) await db.collection('onlineProducts').doc(existing.id).set(data, {merge:true});
+    else await db.collection('onlineProducts').add(data);
+    renderImportList(); // will update to "Synced ✓" once PRODUCTS snapshot refreshes
+  }catch(err){ alert('Import fail hua: ' + err.message); }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>iHILLS — Hills Mobile Store | Mobiles &amp; Accessories</title>
+<meta name="description" content="Hills Mobile — Premium mobiles &amp; accessories. Latest offers, best prices.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#241F14;
+    --accent:#B8860B;
+    --accent2:#D4AF37;
+    --accent-soft:#FBF1D6;
+    --green:#1F9D55;
+    --green-soft:#E6F7EE;
+    --red:#C23A3A;
+    --paper:#F8F5EC;
+    --card:#FFFFFF;
+    --line:#E9E1C8;
+    --muted:#7A6F55;
+    --shadow-sm:0 2px 8px rgba(120,100,40,.10);
+    --shadow-md:0 8px 28px rgba(120,100,40,.14);
+    --shadow-lg:0 18px 48px rgba(120,100,40,.22);
+  }
+  *{box-sizing:border-box;}
+  @keyframes fadeInUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes auroraDrift{0%{transform:translate(-6%,-4%) scale(1);}50%{transform:translate(5%,6%) scale(1.12);}100%{transform:translate(-6%,-4%) scale(1);}}
+  @keyframes shimmer{0%{background-position:-200% 0;}100%{background-position:200% 0;}}
+  @keyframes slideIn{from{transform:translateX(100%);}to{transform:translateX(0);}}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important;animation-iteration-count:1 !important;transition-duration:.001ms !important;}
+  }
+  body{margin:0;font-family:'Inter','Segoe UI',Arial,sans-serif;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;}
+  h1,h2,h3,.brand,.price{font-family:'Sora','Segoe UI',Arial,sans-serif;}
+  a{color:inherit;text-decoration:none;}
+
+  /* ---- Top bar ---- */
+  header{position:sticky;top:0;z-index:50;background:rgba(248,245,236,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  .topbar{max-width:1180px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;}
+  .brand{font-size:20px;font-weight:800;letter-spacing:.2px;background:linear-gradient(90deg,#8A6D1E,var(--accent));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;}
+  .brand span{display:block;font-size:11px;font-weight:500;color:var(--muted);-webkit-text-fill-color:var(--muted);letter-spacing:.4px;margin-top:1px;}
+  .cart-btn{position:relative;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 16px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;color:var(--ink);box-shadow:var(--shadow-sm);}
+  .cart-count{position:absolute;top:-7px;right:-7px;background:var(--accent);color:#fff;border-radius:50%;width:20px;height:20px;font-size:11px;display:flex;align-items:center;justify-content:center;font-weight:800;}
+
+  /* ---- Hero / offers ---- */
+  .hero{max-width:1180px;margin:0 auto;padding:26px 20px 6px;}
+  .hero-banner{position:relative;overflow:hidden;border-radius:20px;background:linear-gradient(160deg,#2A2210 0%,#241F14 55%,#2E2712 100%);padding:34px 28px;color:#fff;box-shadow:var(--shadow-lg);}
+  .hero-banner::before{content:'';position:absolute;top:-30%;left:-10%;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(212,175,55,.35),transparent 70%);filter:blur(20px);animation:auroraDrift 16s ease-in-out infinite;pointer-events:none;}
+  .hero-eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent2);font-weight:700;position:relative;z-index:1;}
+  .hero-title{font-size:clamp(24px,4vw,36px);font-weight:800;margin:8px 0 10px;position:relative;z-index:1;max-width:560px;line-height:1.15;}
+  .hero-sub{color:#D8CFB3;font-size:14.5px;max-width:520px;position:relative;z-index:1;}
+  .hero-cta{margin-top:18px;position:relative;z-index:1;display:inline-block;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#211C0E;font-weight:800;padding:11px 22px;border-radius:10px;font-size:14px;box-shadow:0 6px 18px rgba(184,134,11,.35);}
+
+  /* ---- Category tabs ---- */
+  .tabs-wrap{max-width:1180px;margin:22px auto 0;padding:0 20px;display:flex;gap:8px;overflow-x:auto;}
+  .tab{flex-shrink:0;padding:9px 18px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-weight:600;font-size:13.5px;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .16s;}
+  .tab.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#211C0E;border-color:transparent;box-shadow:var(--shadow-sm);}
+
+  /* ---- Search + sort toolbar ---- */
+  .toolbar-wrap{max-width:1180px;margin:14px auto 0;padding:0 20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;}
+  .search-box{position:relative;flex:1;min-width:200px;max-width:400px;}
+  .search-box input{width:100%;padding:10px 14px 10px 36px;border:1px solid var(--line);border-radius:10px;font-size:13.5px;font-family:inherit;background:var(--card);color:var(--ink);}
+  .search-box input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .search-box::before{content:'🔍';position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;opacity:.6;}
+  .result-count{font-size:12px;color:var(--muted);white-space:nowrap;}
+  .sort-select{padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:13px;font-family:inherit;background:var(--card);color:var(--ink);cursor:pointer;}
+  .sort-select:focus{outline:none;border-color:var(--accent);}
+
+  /* ---- Quick view modal ---- */
+  .qv-overlay{position:fixed;inset:0;background:rgba(20,16,8,.5);z-index:99;display:none;align-items:center;justify-content:center;padding:20px;}
+  .qv-overlay.show{display:flex;}
+  .qv-box{background:var(--card);border-radius:18px;max-width:640px;width:100%;max-height:88vh;overflow-y:auto;box-shadow:var(--shadow-lg);position:relative;animation:fadeInUp .22s ease both;}
+  .qv-close{position:absolute;top:12px;right:14px;background:rgba(255,255,255,.9);border:none;width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;color:var(--ink);z-index:2;}
+  .qv-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+  @media (max-width:520px){ .qv-grid{grid-template-columns:1fr;} }
+  .qv-img{aspect-ratio:1/1;background:linear-gradient(160deg,#F3EEDC,#EAE2C4);position:relative;}
+  .qv-img img{width:100%;height:100%;object-fit:cover;}
+  .qv-body{padding:22px 24px;display:flex;flex-direction:column;gap:10px;}
+  .qv-body .pname{font-size:19px;}
+  .qv-body .pdesc{font-size:13.5px;min-height:0;}
+  .qv-body .pprice-row{margin-top:4px;}
+  .qv-body .price{font-size:22px;}
+
+  /* ---- Product grid ---- */
+  main{max-width:1180px;margin:0 auto;padding:20px 20px 60px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;}
+  .pcard{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm);transition:transform .18s,box-shadow .18s;animation:fadeInUp .3s ease both;display:flex;flex-direction:column;}
+  .pcard:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
+  .pimg-wrap{position:relative;aspect-ratio:1/1;background:linear-gradient(160deg,#F3EEDC,#EAE2C4);overflow:hidden;}
+  .pimg-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
+  .pimg-wrap .noimg{display:flex;align-items:center;justify-content:center;height:100%;color:var(--muted);font-size:12px;}
+  .badge{position:absolute;top:10px;left:10px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent));background-size:200% 100%;animation:shimmer 3s linear infinite;color:#211C0E;font-size:10.5px;font-weight:800;padding:4px 10px;border-radius:20px;letter-spacing:.3px;box-shadow:0 2px 8px rgba(184,134,11,.35);}
+  .badge.out{background:#EFEBE0;color:var(--muted);animation:none;}
+  .pbody{padding:13px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1;}
+  .pname{font-size:14px;font-weight:700;line-height:1.3;}
+  .pdesc{font-size:12px;color:var(--muted);line-height:1.4;min-height:16px;}
+  .pprice-row{display:flex;align-items:baseline;gap:7px;margin-top:2px;}
+  .price{font-size:17px;font-weight:800;color:var(--accent);}
+  .mrp{font-size:12px;color:var(--muted);text-decoration:line-through;}
+  .off{font-size:11px;color:var(--green);font-weight:700;}
+  .addbtn{margin-top:8px;width:100%;background:var(--ink);color:#F8F5EC;border:none;padding:9px;border-radius:9px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit;transition:opacity .15s,transform .15s;}
+  .addbtn:hover{opacity:.88;}
+  .addbtn:disabled{background:#EFEBE0;color:var(--muted);cursor:not-allowed;}
+  .empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:60px 20px;font-size:14px;}
+
+  /* ---- Cart drawer ---- */
+  .overlay{position:fixed;inset:0;background:rgba(20,16,8,.45);z-index:99;display:none;}
+  .overlay.show{display:block;}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:100%;max-width:400px;background:var(--paper);z-index:100;box-shadow:-10px 0 40px rgba(0,0,0,.25);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;}
+  .drawer.show{transform:translateX(0);animation:slideIn .25s ease;}
+  .drawer-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
+  .drawer-head h3{margin:0;font-size:17px;}
+  .drawer-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1;}
+  .drawer-body{flex:1;overflow-y:auto;padding:14px 20px;}
+  .cline{display:flex;gap:10px;padding:10px 0;border-bottom:1px solid var(--line);align-items:center;}
+  .cline img{width:52px;height:52px;border-radius:9px;object-fit:cover;background:#EAE2C4;flex-shrink:0;}
+  .cline .ci-name{font-size:13px;font-weight:600;flex:1;}
+  .cline .ci-price{font-size:12.5px;color:var(--muted);}
+  .qty{display:flex;align-items:center;gap:8px;}
+  .qty button{width:24px;height:24px;border-radius:6px;border:1px solid var(--line);background:#fff;cursor:pointer;font-size:14px;line-height:1;}
+  .drawer-foot{padding:16px 20px 20px;border-top:1px solid var(--line);background:var(--card);}
+  .total-row{display:flex;justify-content:space-between;font-weight:800;font-size:16px;margin-bottom:12px;}
+  .checkout-btn{width:100%;background:linear-gradient(135deg,#1E8A57,#25B36F);color:#fff;border:none;padding:13px;border-radius:11px;font-weight:800;font-size:14.5px;cursor:pointer;font-family:inherit;box-shadow:0 6px 18px rgba(30,138,87,.3);}
+  .checkout-btn:disabled{background:#ccc;box-shadow:none;cursor:not-allowed;}
+
+  /* ---- Checkout form ---- */
+  .form-field{margin-bottom:12px;}
+  .form-field label{font-size:12px;color:var(--muted);font-weight:600;display:block;margin-bottom:4px;}
+  .form-field input,.form-field textarea{width:100%;padding:10px 11px;border:1px solid var(--line);border-radius:9px;font-size:13.5px;font-family:inherit;background:#fff;color:var(--ink);}
+  .form-field input:focus,.form-field textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);}
+  .note{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.5;}
+
+  footer{text-align:center;padding:26px 20px 34px;color:var(--muted);font-size:12px;border-top:1px solid var(--line);}
+  .wa-float{position:fixed;bottom:20px;left:20px;z-index:60;background:#25B36F;color:#fff;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 6px 18px rgba(30,138,87,.4);}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="topbar">
+    <div class="brand">iHILLS<span>Hills Mobile Store</span></div>
+    <button class="cart-btn" id="cartBtn">🛒 Cart<span class="cart-count" id="cartCount" style="display:none">0</span></button>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-banner" id="heroBanner">
+    <div class="hero-eyebrow">This week's offer</div>
+    <div class="hero-title" id="heroTitle">Best deals on mobiles &amp; accessories</div>
+    <div class="hero-sub" id="heroSub">Browse our latest stock, add to cart, and send us your order — we'll confirm on WhatsApp.</div>
+    <a href="#products" class="hero-cta">Shop Now</a>
+  </div>
+</div>
+
+<div class="tabs-wrap" id="tabsWrap"></div>
+
+<div class="toolbar-wrap">
+  <div class="search-box"><input id="searchInput" placeholder="Search mobiles, accessories…"></div>
+  <select class="sort-select" id="sortSelect">
+    <option value="featured">Sort: Featured</option>
+    <option value="price-low">Price: Low to High</option>
+    <option value="price-high">Price: High to Low</option>
+    <option value="newest">Newest First</option>
+  </select>
+</div>
+<div class="toolbar-wrap" style="margin-top:2px">
+  <span class="result-count" id="resultCount"></span>
+</div>
+
+<main id="products">
+  <div class="grid" id="grid"><div class="empty">Loading products…</div></div>
+</main>
+
+<footer>iHILLS — Hills Mobile Store &nbsp;·&nbsp; Prices &amp; stock may change &nbsp;·&nbsp; Orders confirmed via WhatsApp/call, no online payment needed</footer>
+
+<a class="wa-float" id="waFloat" href="#" target="_blank" title="Chat on WhatsApp">💬</a>
+
+<div class="qv-overlay" id="qvOverlay">
+  <div class="qv-box" id="qvBox"></div>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<div class="drawer" id="cartDrawer">
+  <div class="drawer-head"><h3>Your Cart</h3><button class="drawer-close" id="drawerClose">×</button></div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot" id="drawerFoot" style="display:none">
+    <div class="total-row"><span>Total</span><span id="cartTotal">₹0</span></div>
+    <button class="checkout-btn" id="goCheckout">Proceed to Order Request</button>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ============ CONFIG — EDIT THESE FOR YOUR SHOP ============ */
+const firebaseConfig = {
+  apiKey: "AIzaSyCk_K4KAieJdfABIhOBz9HEsiVBVougyXI",
+  authDomain: "hillsmobileerp.firebaseapp.com",
+  projectId: "hillsmobileerp",
+  storageBucket: "hillsmobileerp.firebasestorage.app",
+  messagingSenderId: "153415150787",
+  appId: "1:153415150787:web:7180feacf04987f4910676"
+};
+const SHOP_WHATSAPP = "917017324455"; // Hills Mobile Store WhatsApp number
+const HERO = {
+  title: "Best deals on mobiles & accessories",
+  sub: "Browse our latest stock, add to cart, and send us your order — we'll confirm on WhatsApp."
+};
+/* ============================================================ */
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+let PRODUCTS = [];
+let CART = JSON.parse(sessionStorage.getItem('cart') || '[]'); // in-memory per tab; cleared on new visit
+let activeCat = 'all';
+let searchQuery = '';
+let sortMode = 'featured';
+
+document.getElementById('heroTitle').textContent = HERO.title;
+document.getElementById('heroSub').textContent = HERO.sub;
+document.getElementById('waFloat').href = `https://wa.me/${SHOP_WHATSAPP}?text=${encodeURIComponent('Hi, I have a query about a product.')}`;
+
+function fmt(n){ return '₹' + Number(n||0).toLocaleString('en-IN'); }
+function esc(s){ return (s||'').toString().replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function saveCart(){ sessionStorage.setItem('cart', JSON.stringify(CART)); renderCartCount(); }
+
+/* ---------- Load products from Firestore ---------- */
+db.collection('onlineProducts').where('inStock','==',true).onSnapshot(snap=>{
+  PRODUCTS = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  renderTabs();
+  renderGrid();
+}, err=>{
+  document.getElementById('grid').innerHTML = '<div class="empty">Products load nahi ho paaye. Thodi der baad try karein.</div>';
+  console.error(err);
+});
+
+function renderTabs(){
+  const cats = ['all', ...new Set(PRODUCTS.map(p=>p.category).filter(Boolean))];
+  const labels = {all:'All', mobile:'📱 Mobiles', accessory:'🎧 Accessories'};
+  document.getElementById('tabsWrap').innerHTML = cats.map(c=>
+    `<button class="tab ${c===activeCat?'active':''}" data-cat="${c}">${labels[c]||esc(c)}</button>`
+  ).join('');
+  document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{ activeCat=b.dataset.cat; renderTabs(); renderGrid(); });
+}
+
+function getFilteredSorted(){
+  let list = activeCat==='all' ? PRODUCTS.slice() : PRODUCTS.filter(p=>p.category===activeCat);
+  if(searchQuery.trim()){
+    const q = searchQuery.trim().toLowerCase();
+    list = list.filter(p => (p.name||'').toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q));
+  }
+  if(sortMode==='price-low') list.sort((a,b)=>a.price-b.price);
+  else if(sortMode==='price-high') list.sort((a,b)=>b.price-a.price);
+  else if(sortMode==='newest') list.sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
+  // 'featured': keep original order (as added in admin panel)
+  return list;
+}
+
+function productCardHTML(p){
+  const off = p.mrp && p.mrp > p.price ? Math.round((1 - p.price/p.mrp)*100) : 0;
+  return `
+    <div class="pcard">
+      <div class="pimg-wrap" data-quickview="${p.id}" style="cursor:pointer">
+        ${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ''}
+        ${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : `<div class="noimg">No image</div>`}
+      </div>
+      <div class="pbody">
+        <div class="pname" data-quickview="${p.id}" style="cursor:pointer">${esc(p.name)}</div>
+        <div class="pdesc">${esc(p.desc||'')}</div>
+        <div class="pprice-row">
+          <span class="price">${fmt(p.price)}</span>
+          ${p.mrp && p.mrp>p.price ? `<span class="mrp">${fmt(p.mrp)}</span>` : ''}
+          ${off>0 ? `<span class="off">${off}% off</span>` : ''}
+        </div>
+        <button class="addbtn" data-add="${p.id}">Add to Cart</button>
+      </div>
+    </div>`;
+}
+
+function renderGrid(){
+  const list = getFilteredSorted();
+  const g = document.getElementById('grid');
+  document.getElementById('resultCount').textContent = PRODUCTS.length ? `${list.length} product${list.length!==1?'s':''} mil${list.length!==1?'e':'a'}` : '';
+  if(!list.length){ g.innerHTML = '<div class="empty">Koi product match nahi hua. Search ya filter badal kar dekhein.</div>'; return; }
+  g.innerHTML = list.map(productCardHTML).join('');
+  document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>addToCart(b.dataset.add));
+  document.querySelectorAll('[data-quickview]').forEach(el=>el.onclick=()=>openQuickView(el.dataset.quickview));
+}
+
+/* ---------- Search & sort wiring ---------- */
+let searchDebounce;
+document.getElementById('searchInput').addEventListener('input', e=>{
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(()=>{ searchQuery = e.target.value; renderGrid(); }, 200);
+});
+document.getElementById('sortSelect').addEventListener('change', e=>{ sortMode = e.target.value; renderGrid(); });
+
+/* ---------- Quick view modal ---------- */
+const qvOverlay = document.getElementById('qvOverlay');
+function openQuickView(id){
+  const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
+  const off = p.mrp && p.mrp > p.price ? Math.round((1 - p.price/p.mrp)*100) : 0;
+  document.getElementById('qvBox').innerHTML = `
+    <button class="qv-close" id="qvClose">×</button>
+    <div class="qv-grid">
+      <div class="qv-img">
+        ${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ''}
+        ${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}">` : `<div class="noimg" style="display:flex;align-items:center;justify-content:center;height:100%">No image</div>`}
+      </div>
+      <div class="qv-body">
+        <div class="pname">${esc(p.name)}</div>
+        <div class="pdesc">${esc(p.desc||'')}</div>
+        <div class="pprice-row">
+          <span class="price">${fmt(p.price)}</span>
+          ${p.mrp && p.mrp>p.price ? `<span class="mrp">${fmt(p.mrp)}</span>` : ''}
+          ${off>0 ? `<span class="off">${off}% off</span>` : ''}
+        </div>
+        <button class="addbtn" style="margin-top:10px" id="qvAdd">Add to Cart</button>
+      </div>
+    </div>
+  `;
+  qvOverlay.classList.add('show');
+  document.getElementById('qvClose').onclick = closeQuickView;
+  document.getElementById('qvAdd').onclick = ()=>{ addToCart(p.id); closeQuickView(); };
+}
+function closeQuickView(){ qvOverlay.classList.remove('show'); }
+qvOverlay.addEventListener('click', e=>{ if(e.target===qvOverlay) closeQuickView(); });
+
+function addToCart(id){
+  const p = PRODUCTS.find(x=>x.id===id);
+  if(!p) return;
+  const line = CART.find(x=>x.id===id);
+  if(line) line.qty += 1;
+  else CART.push({id:p.id, name:p.name, price:p.price, image:p.image||'', qty:1});
+  saveCart();
+  openDrawer();
+  renderDrawer();
+}
+
+/* ---------- Cart drawer ---------- */
+const overlay = document.getElementById('overlay');
+const drawer = document.getElementById('cartDrawer');
+function openDrawer(){ overlay.classList.add('show'); drawer.classList.add('show'); renderDrawer(); }
+function closeDrawer(){ overlay.classList.remove('show'); drawer.classList.remove('show'); }
+document.getElementById('cartBtn').onclick = openDrawer;
+document.getElementById('drawerClose').onclick = closeDrawer;
+overlay.onclick = closeDrawer;
+
+function renderCartCount(){
+  const n = CART.reduce((s,c)=>s+c.qty,0);
+  const el = document.getElementById('cartCount');
+  el.style.display = n>0 ? 'flex' : 'none';
+  el.textContent = n;
+}
+
+function renderDrawer(){
+  const body = document.getElementById('drawerBody');
+  const foot = document.getElementById('drawerFoot');
+  if(!CART.length){
+    body.innerHTML = '<div class="empty" style="padding:40px 0">Cart khaali hai</div>';
+    foot.style.display = 'none';
+    return;
+  }
+  body.innerHTML = CART.map(c=>`
+    <div class="cline">
+      ${c.image ? `<img src="${esc(c.image)}">` : `<div style="width:52px;height:52px;border-radius:9px;background:#EAE2C4;flex-shrink:0"></div>`}
+      <div style="flex:1">
+        <div class="ci-name">${esc(c.name)}</div>
+        <div class="ci-price">${fmt(c.price)} × ${c.qty} = ${fmt(c.price*c.qty)}</div>
+      </div>
+      <div class="qty">
+        <button data-dec="${c.id}">−</button>
+        <span>${c.qty}</span>
+        <button data-inc="${c.id}">+</button>
+      </div>
+    </div>
+  `).join('');
+  document.querySelectorAll('[data-inc]').forEach(b=>b.onclick=()=>{ changeQty(b.dataset.inc, 1); });
+  document.querySelectorAll('[data-dec]').forEach(b=>b.onclick=()=>{ changeQty(b.dataset.dec, -1); });
+  const total = CART.reduce((s,c)=>s+c.price*c.qty,0);
+  document.getElementById('cartTotal').textContent = fmt(total);
+  foot.style.display = 'block';
+}
+function changeQty(id, delta){
+  const line = CART.find(x=>x.id===id);
+  if(!line) return;
+  line.qty += delta;
+  if(line.qty<=0) CART = CART.filter(x=>x.id!==id);
+  saveCart(); renderDrawer();
+}
+
+/* ---------- Checkout ---------- */
+document.getElementById('goCheckout').onclick = ()=>{
+  if(!CART.length) return;
+  showCheckoutForm();
+};
+
+function showCheckoutForm(){
+  const body = document.getElementById('drawerBody');
+  const foot = document.getElementById('drawerFoot');
+  foot.style.display = 'none';
+  body.innerHTML = `
+    <div class="form-field"><label>Aapka naam *</label><input id="cName" placeholder="Poora naam"></div>
+    <div class="form-field"><label>Phone number *</label><input id="cPhone" placeholder="10-digit mobile number" inputmode="tel"></div>
+    <div class="form-field"><label>Address / Pickup se lenge? (optional)</label><textarea id="cAddr" rows="2" placeholder="Delivery address ya 'Store se pickup karunga'"></textarea></div>
+    <div class="form-field"><label>Koi note (optional)</label><textarea id="cNote" rows="2" placeholder="Color, storage, ya koi aur requirement"></textarea></div>
+    <button class="checkout-btn" id="submitOrder">Send Order Request</button>
+    <div class="note">Yeh sirf ek order <b>request</b> hai — payment abhi nahi karni. Hum aapko WhatsApp/call par confirm karenge stock aur final price ke saath.</div>
+  `;
+  document.getElementById('submitOrder').onclick = submitOrder;
+}
+
+async function submitOrder(){
+  const name = document.getElementById('cName').value.trim();
+  const phone = document.getElementById('cPhone').value.trim();
+  const addr = document.getElementById('cAddr').value.trim();
+  const note = document.getElementById('cNote').value.trim();
+  if(!name || !phone){ alert('Naam aur phone number zaroor bharein.'); return; }
+  if(!/^[0-9]{10}$/.test(phone.replace(/\D/g,'').slice(-10))){ alert('Sahi 10-digit phone number daalein.'); return; }
+
+  const total = CART.reduce((s,c)=>s+c.price*c.qty,0);
+  const order = {
+    items: CART.map(c=>({id:c.id, name:c.name, price:c.price, qty:c.qty})),
+    total, customerName: name, phone, address: addr, note,
+    status: 'new', createdAt: new Date().toISOString()
+  };
+
+  const btn = document.getElementById('submitOrder');
+  btn.disabled = true; btn.textContent = 'Sending…';
+  try{
+    await db.collection('onlineOrders').add(order);
+  }catch(err){
+    console.error(err);
+    // Even if Firestore save fails (e.g. offline), still let WhatsApp message go through below.
+  }
+
+  const lines = CART.map(c=>`• ${c.name} × ${c.qty} = ${fmt(c.price*c.qty)}`).join('\n');
+  const msg = `Naya Order Request — iHILLS Hills Mobile Store\n\nName: ${name}\nPhone: ${phone}\n${addr?('Address: '+addr+'\n'):''}${note?('Note: '+note+'\n'):''}\nItems:\n${lines}\n\nTotal: ${fmt(total)}`;
+  window.open(`https://wa.me/${SHOP_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
+
+  CART = []; saveCart();
+  document.getElementById('drawerBody').innerHTML = `<div class="empty" style="padding:40px 0">✅ Order request bhej diya gaya!<br>Hum jald hi WhatsApp par confirm karenge.</div>`;
+  document.getElementById('drawerFoot').style.display = 'none';
+}
+
+renderCartCount();
+</script>
+</body>
+</html>
