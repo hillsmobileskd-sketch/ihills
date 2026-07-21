@@ -138,6 +138,28 @@
       </table>
     </div>
 
+    <div class="card">
+      <h2 id="couponFormTitle" style="font-size:15px;margin:0 0 4px">Coupons / Discount Codes</h2>
+      <div class="sub" style="margin-bottom:12px">Yahan bana hua code customer checkout par daal sakta hai. Spin-wheel bhi inhi discounts ka use karta hai.</div>
+      <input type="hidden" id="cpId">
+      <div class="row">
+        <div><label>Code * (jaise SALE10)</label><input id="cpCode" placeholder="SALE10" style="text-transform:uppercase"></div>
+        <div><label>Type *</label>
+          <select id="cpType"><option value="percent">Percent (%)</option><option value="flat">Flat (₹)</option></select>
+        </div>
+        <div><label>Value *</label><input id="cpValue" type="number" placeholder="e.g. 10"></div>
+      </div>
+      <label><input type="checkbox" id="cpActive" style="width:auto;margin-right:6px" checked>Active (website par chalega)</label>
+      <div style="margin-top:10px">
+        <button id="couponSaveBtn">Save Coupon</button>
+        <button class="outline" id="couponCancelEdit" style="display:none">Cancel Edit</button>
+      </div>
+      <table style="margin-top:16px">
+        <thead><tr><th>Code</th><th>Discount</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="couponRows"><tr><td colspan="4" style="color:var(--muted)">Loading…</td></tr></tbody>
+      </table>
+    </div>
+
     <button class="outline" id="logoutBtn">Logout</button>
   </div>
 </div>
@@ -175,6 +197,7 @@ auth.onAuthStateChanged(async user=>{
   loadBanners();
   loadOrders();
   loadVisitCount();
+  loadCoupons();
   if('Notification' in window && Notification.permission === 'default'){ Notification.requestPermission(); }
 });
 
@@ -224,7 +247,7 @@ function renderOrders(){
     <tr style="${isNew?'background:#FFF9E8':''}">
       <td>${date}</td>
       <td>${esc(o.customerName)}<br><span class="imp-sub">${esc(o.phone)}</span></td>
-      <td style="max-width:220px">${items}</td>
+      <td style="max-width:220px">${items}${o.couponCode?`<br><span class="tag done">${esc(o.couponCode)} (−${fmt(o.discount||0)})</span>`:''}</td>
       <td>${fmt(o.total)}</td>
       <td><span class="pill ${isNew?'out':'in'}">${isNew?'New':'Done'}</span></td>
       <td class="actions">
@@ -531,6 +554,83 @@ document.getElementById('bannerSaveBtn').onclick = async ()=>{
 async function deleteBanner(id){
   if(!confirm('Yeh banner delete karna hai?')) return;
   try{ await db.collection('banners').doc(id).delete(); }
+  catch(err){ alert('Delete fail hua: ' + err.message); }
+}
+
+/* ---------- Coupons ---------- */
+let COUPONS = [];
+function loadCoupons(){
+  db.collection('coupons').onSnapshot(snap=>{
+    COUPONS = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    renderCouponRows();
+  }, err=>{
+    document.getElementById('couponRows').innerHTML = '<tr><td colspan="4" style="color:var(--red)">Coupons load nahi ho paaye: '+esc(err.message)+'</td></tr>';
+    console.error(err);
+  });
+}
+
+function renderCouponRows(){
+  const tb = document.getElementById('couponRows');
+  if(!COUPONS.length){ tb.innerHTML = '<tr><td colspan="4" style="color:var(--muted)">Koi coupon add nahi kiya abhi tak.</td></tr>'; return; }
+  tb.innerHTML = COUPONS.map(c=>`
+    <tr>
+      <td><b>${esc(c.id)}</b></td>
+      <td>${c.type==='percent' ? c.value+'%' : fmt(c.value)}</td>
+      <td><span class="pill ${c.active?'in':'out'}">${c.active?'Active':'Off'}</span></td>
+      <td class="actions">
+        <button class="outline" data-cedit="${c.id}">Edit</button>
+        <button class="danger" data-cdel="${c.id}">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+  document.querySelectorAll('[data-cedit]').forEach(btn=>btn.onclick=()=>editCoupon(btn.dataset.cedit));
+  document.querySelectorAll('[data-cdel]').forEach(btn=>btn.onclick=()=>deleteCoupon(btn.dataset.cdel));
+}
+
+function editCoupon(id){
+  const c = COUPONS.find(x=>x.id===id); if(!c) return;
+  document.getElementById('cpId').value = c.id;
+  document.getElementById('cpCode').value = c.id;
+  document.getElementById('cpCode').disabled = true; // code = doc ID, can't change once created
+  document.getElementById('cpType').value = c.type||'percent';
+  document.getElementById('cpValue').value = c.value||'';
+  document.getElementById('cpActive').checked = !!c.active;
+  document.getElementById('couponFormTitle').textContent = 'Edit Coupon';
+  document.getElementById('couponCancelEdit').style.display = 'inline-block';
+  window.scrollTo({top:document.getElementById('cpCode').getBoundingClientRect().top + window.scrollY - 80, behavior:'smooth'});
+}
+
+document.getElementById('couponCancelEdit').onclick = resetCouponForm;
+function resetCouponForm(){
+  document.getElementById('cpId').value = '';
+  document.getElementById('cpCode').value = '';
+  document.getElementById('cpCode').disabled = false;
+  document.getElementById('cpType').value = 'percent';
+  document.getElementById('cpValue').value = '';
+  document.getElementById('cpActive').checked = true;
+  document.getElementById('couponFormTitle').textContent = 'Coupons / Discount Codes';
+  document.getElementById('couponCancelEdit').style.display = 'none';
+}
+
+document.getElementById('couponSaveBtn').onclick = async ()=>{
+  const code = document.getElementById('cpCode').value.trim().toUpperCase();
+  const value = Number(document.getElementById('cpValue').value);
+  if(!code || !value){ alert('Coupon code aur value zaroor bharein.'); return; }
+  const data = {
+    type: document.getElementById('cpType').value,
+    value,
+    active: document.getElementById('cpActive').checked,
+    updatedAt: new Date().toISOString()
+  };
+  try{
+    await db.collection('coupons').doc(code).set(data, {merge:true});
+    resetCouponForm();
+  }catch(err){ alert('Coupon save fail hua: ' + err.message); }
+};
+
+async function deleteCoupon(id){
+  if(!confirm('Yeh coupon delete karna hai?')) return;
+  try{ await db.collection('coupons').doc(id).delete(); }
   catch(err){ alert('Delete fail hua: ' + err.message); }
 }
 </script>
