@@ -56,6 +56,18 @@
     <div class="sub">Yahan add/edit kiya hua product turant aapki live website (index.html) par dikhega.</div>
 
     <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:4px">
+        <h2 style="font-size:15px;margin:0">🛒 Orders <span id="newOrderBadge" style="display:none;background:var(--red);color:#fff;font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px;margin-left:6px;vertical-align:middle">0 New</span></h2>
+        <div style="font-size:12.5px;color:var(--muted)">👀 Total site visits: <b id="visitCount" style="color:var(--ink)">—</b></div>
+      </div>
+      <div class="sub" style="margin-bottom:12px">Yahan har order turant dikhega, chahe customer ne WhatsApp par message bheja ho ya nahi. Tab khula rakhoge to naye order par beep + notification bhi aayega.</div>
+      <table>
+        <thead><tr><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="orderRows"><tr><td colspan="6" style="color:var(--muted)">Loading…</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="card">
       <h2 style="font-size:15px;margin:0 0 4px">Import from ERP Stock</h2>
       <div class="sub" style="margin-bottom:12px">Apne ERP ke mobiles/accessories stock se seedha import karein — dobara type nahi karna padega. Sirf website-wala price/photo/badge add kar dijiye.</div>
       <div class="row">
@@ -161,6 +173,9 @@ auth.onAuthStateChanged(async user=>{
   loadProducts();
   loadStoresList();
   loadBanners();
+  loadOrders();
+  loadVisitCount();
+  if('Notification' in window && Notification.permission === 'default'){ Notification.requestPermission(); }
 });
 
 document.getElementById('loginBtn').onclick = async ()=>{
@@ -174,6 +189,80 @@ document.getElementById('logoutBtn').onclick = ()=>auth.signOut();
 
 function fmt(n){ return '₹'+Number(n||0).toLocaleString('en-IN'); }
 function esc(s){ return (s||'').toString().replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+/* ---------- Orders dashboard ---------- */
+let ORDERS = [];
+let ordersFirstLoad = true;
+
+function loadOrders(){
+  db.collection('onlineOrders').orderBy('createdAt','desc').onSnapshot(snap=>{
+    // Detect newly-added orders (after the very first load) to trigger beep + notification
+    if(!ordersFirstLoad){
+      snap.docChanges().forEach(ch=>{
+        if(ch.type === 'added') notifyNewOrder(ch.doc.data());
+      });
+    }
+    ORDERS = snap.docs.map(d=>({id:d.id, ...d.data()}));
+    ordersFirstLoad = false;
+    renderOrders();
+  }, err=>{ console.error('Orders load nahi ho paaye', err); });
+}
+
+function renderOrders(){
+  const tb = document.getElementById('orderRows');
+  const newCount = ORDERS.filter(o=>o.status==='new').length;
+  const badge = document.getElementById('newOrderBadge');
+  if(newCount>0){ badge.style.display='inline-block'; badge.textContent = newCount + ' New'; }
+  else{ badge.style.display='none'; }
+
+  if(!ORDERS.length){ tb.innerHTML = '<tr><td colspan="6" style="color:var(--muted)">Abhi tak koi order nahi aaya.</td></tr>'; return; }
+  tb.innerHTML = ORDERS.map(o=>{
+    const items = (o.items||[]).map(i=>`${esc(i.name)} × ${i.qty}`).join(', ');
+    const date = o.createdAt ? new Date(o.createdAt).toLocaleString('en-IN', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+    const isNew = o.status === 'new';
+    return `
+    <tr style="${isNew?'background:#FFF9E8':''}">
+      <td>${date}</td>
+      <td>${esc(o.customerName)}<br><span class="imp-sub">${esc(o.phone)}</span></td>
+      <td style="max-width:220px">${items}</td>
+      <td>${fmt(o.total)}</td>
+      <td><span class="pill ${isNew?'out':'in'}">${isNew?'New':'Done'}</span></td>
+      <td class="actions">
+        ${isNew ? `<button data-done="${o.id}">Mark Done</button>` : ''}
+        <a href="https://wa.me/${(o.phone||'').replace(/\D/g,'')}" target="_blank"><button class="outline">WhatsApp</button></a>
+      </td>
+    </tr>`;
+  }).join('');
+  document.querySelectorAll('[data-done]').forEach(b=>b.onclick=()=>markOrderDone(b.dataset.done));
+}
+
+async function markOrderDone(id){
+  try{ await db.collection('onlineOrders').doc(id).update({status:'done'}); }
+  catch(err){ alert('Update fail hua: ' + err.message); }
+}
+
+function notifyNewOrder(order){
+  // Beep sound (no external file needed — generated in-browser)
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const osc = ctx.createOscillator(); const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value = 880; osc.type = 'sine';
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    osc.start(); osc.stop(ctx.currentTime + 0.35);
+  }catch(e){}
+  // Browser notification (works even if admin tab is in background)
+  if('Notification' in window && Notification.permission === 'granted'){
+    new Notification('🛒 Naya Order Aaya!', { body: `${order.customerName||'Customer'} — ${fmt(order.total)}` });
+  }
+}
+
+/* ---------- Site visits counter ---------- */
+function loadVisitCount(){
+  db.collection('siteStats').doc('visits').onSnapshot(doc=>{
+    document.getElementById('visitCount').textContent = doc.exists ? (doc.data().count||0).toLocaleString('en-IN') : '0';
+  }, err=>{ console.error('Visit count load nahi hua', err); });
+}
 
 function loadProducts(){
   db.collection('onlineProducts').orderBy('createdAt','desc').onSnapshot(snap=>{
