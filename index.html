@@ -59,6 +59,52 @@
   .hero-dot{width:7px;height:7px;border-radius:50%;background:var(--line);cursor:pointer;border:none;padding:0;transition:all .2s ease;}
   .hero-dot.active{background:var(--accent);width:20px;border-radius:5px;}
 
+  /* ---- Wishlist heart ---- */
+  .wish-btn{position:absolute;top:10px;right:10px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.92);border:none;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;box-shadow:var(--shadow-sm);z-index:2;transition:transform .12s;}
+  .wish-btn:hover{transform:scale(1.08);}
+  .wish-btn.active{color:#E63946;}
+  .qv-img .wish-btn{top:12px;right:12px;}
+
+  /* ---- Stock badges ---- */
+  .badge.low{background:linear-gradient(90deg,#E63946,#F1A208);animation:none;}
+  .stock-note{font-size:11px;color:#E63946;font-weight:700;}
+
+  /* ---- Star ratings ---- */
+  .stars{color:var(--accent2);font-size:12.5px;letter-spacing:1px;}
+  .stars .empty-star{color:var(--line);}
+  .rating-row{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--muted);}
+  .star-input{display:flex;gap:4px;font-size:22px;cursor:pointer;user-select:none;}
+  .star-input span{color:var(--line);}
+  .star-input span.on{color:var(--accent2);}
+  .review-item{padding:10px 0;border-bottom:1px solid var(--line);}
+  .review-item .rname{font-weight:700;font-size:13px;}
+  .review-item .rtext{font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.4;}
+
+  /* ---- Related products ---- */
+  .related-wrap{padding:16px 24px 20px;border-top:1px solid var(--line);}
+  .related-title{font-size:13px;font-weight:700;margin-bottom:10px;}
+  .related-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;}
+  .related-card{cursor:pointer;}
+  .related-card img{width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:10px;background:#EAE2C4;}
+  .related-card .rp-name{font-size:11.5px;font-weight:600;margin-top:4px;line-height:1.3;}
+  .related-card .rp-price{font-size:12px;font-weight:800;color:var(--accent);}
+
+  /* ---- Reviews section ---- */
+  .reviews-wrap{padding:16px 24px 22px;border-top:1px solid var(--line);}
+  .review-form{display:flex;flex-direction:column;gap:8px;margin-top:10px;background:var(--accent-soft);border-radius:12px;padding:12px;}
+  .review-form input,.review-form textarea{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;font-size:12.5px;font-family:inherit;}
+  .review-form button{align-self:flex-start;background:var(--ink);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-weight:700;font-size:12.5px;cursor:pointer;}
+
+  /* ---- Filters ---- */
+  .filter-select{padding:10px 12px;border:1px solid var(--line);border-radius:10px;font-size:13px;font-family:inherit;background:var(--card);color:var(--ink);cursor:pointer;}
+  .filter-select:focus{outline:none;border-color:var(--accent);}
+
+  /* ---- Pincode check ---- */
+  .pincode-row{display:flex;gap:8px;}
+  .pincode-row input{flex:1;}
+  .pincode-row button{white-space:nowrap;padding:0 14px;border-radius:9px;border:1px solid var(--line);background:#fff;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit;}
+  .pincode-msg{font-size:12px;margin-top:4px;}
+
   /* ---- Category tabs ---- */
   .tabs-wrap{max-width:1180px;margin:22px auto 0;padding:0 20px;display:flex;gap:8px;overflow-x:auto;}
   .tab{flex-shrink:0;padding:9px 18px;border-radius:10px;border:1px solid var(--line);background:var(--card);font-weight:600;font-size:13.5px;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .16s;}
@@ -153,6 +199,7 @@
     <div style="display:flex;gap:8px;align-items:center">
       <button class="cart-btn" id="trackOrderBtn" style="background:transparent;border:1px solid var(--line);color:var(--ink)">📦 Track Order</button>
       <button class="cart-btn" id="spinWheelBtn" style="background:linear-gradient(135deg,#E63946,#F1A208)">🎁 Spin &amp; Win</button>
+      <button class="cart-btn" id="wishlistBtn">❤️ Wishlist<span class="cart-count" id="wishlistCount" style="display:none">0</span></button>
       <button class="cart-btn" id="cartBtn">🛒 Cart<span class="cart-count" id="cartCount" style="display:none">0</span></button>
     </div>
   </div>
@@ -172,6 +219,15 @@
 
 <div class="toolbar-wrap">
   <div class="search-box"><input id="searchInput" placeholder="Search mobiles, accessories…"></div>
+  <select class="filter-select" id="brandSelect"><option value="">Sabhi Brands</option></select>
+  <select class="filter-select" id="priceSelect">
+    <option value="">Sabhi Price</option>
+    <option value="0-5000">₹0 – ₹5,000</option>
+    <option value="5000-10000">₹5,000 – ₹10,000</option>
+    <option value="10000-20000">₹10,000 – ₹20,000</option>
+    <option value="20000-40000">₹20,000 – ₹40,000</option>
+    <option value="40000-999999">₹40,000+</option>
+  </select>
   <select class="sort-select" id="sortSelect">
     <option value="featured">Sort: Featured</option>
     <option value="price-low">Price: Low to High</option>
@@ -204,6 +260,9 @@
     </div>
     <div class="form-field"><label>Order ID (order ke baad diya gaya tha)</label><input id="trackOrderId" placeholder="e.g. aB3xY9..."></div>
     <button class="checkout-btn" id="trackSubmit">Check Status</button>
+    <div style="text-align:center;font-size:11.5px;color:var(--muted);margin:12px 0">— ya —</div>
+    <div class="form-field"><label>Apna Phone Number daalein (sabhi orders dikhega)</label><input id="trackPhone" placeholder="10-digit mobile number" inputmode="tel"></div>
+    <button class="checkout-btn" id="trackPhoneSubmit" style="background:linear-gradient(135deg,#1E8A57,#25B36F)">Mere Orders Dekhein</button>
     <div id="trackResult" style="margin-top:16px;font-size:13.5px;line-height:1.6"></div>
   </div>
 </div>
@@ -224,6 +283,12 @@
   </div>
 </div>
 
+<div class="overlay" id="wishOverlay"></div>
+<div class="drawer" id="wishDrawer">
+  <div class="drawer-head"><h3>Wishlist</h3><button class="drawer-close" id="wishDrawerClose">×</button></div>
+  <div class="drawer-body" id="wishDrawerBody"></div>
+</div>
+
 <div class="overlay" id="overlay"></div>
 <div class="drawer" id="cartDrawer">
   <div class="drawer-head"><h3>Your Cart</h3><button class="drawer-close" id="drawerClose">×</button></div>
@@ -236,6 +301,7 @@
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-functions-compat.js"></script>
 <script>
 /* ============ CONFIG — EDIT THESE FOR YOUR SHOP ============ */
 const firebaseConfig = {
@@ -255,6 +321,7 @@ const HERO = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+const functions = firebase.app().functions('asia-south1');
 
 /* ---------- Site visit counter (owner ke admin panel mein dikhta hai) ---------- */
 db.collection('siteStats').doc('visits').set(
@@ -264,9 +331,13 @@ db.collection('siteStats').doc('visits').set(
 
 let PRODUCTS = [];
 let CART = JSON.parse(sessionStorage.getItem('cart') || '[]'); // in-memory per tab; cleared on new visit
+let WISHLIST = JSON.parse(localStorage.getItem('wishlist') || '[]'); // persists across visits
 let activeCat = 'all';
 let searchQuery = '';
 let sortMode = 'featured';
+let brandFilter = '';
+let priceFilter = '';
+let SERVICEABLE_PINCODES = [];
 
 document.getElementById('heroTitle').textContent = HERO.title;
 document.getElementById('heroSub').textContent = HERO.sub;
@@ -280,11 +351,23 @@ function saveCart(){ sessionStorage.setItem('cart', JSON.stringify(CART)); rende
 db.collection('onlineProducts').where('inStock','==',true).onSnapshot(snap=>{
   PRODUCTS = snap.docs.map(d=>({id:d.id, ...d.data()}));
   renderTabs();
+  renderBrandFilter();
   renderGrid();
+  renderWishlistCount();
 }, err=>{
   document.getElementById('grid').innerHTML = '<div class="empty">Products load nahi ho paaye. Thodi der baad try karein.</div>';
   console.error(err);
 });
+
+function renderBrandFilter(){
+  const sel = document.getElementById('brandSelect');
+  const current = sel.value;
+  const brands = [...new Set(PRODUCTS.map(p=>p.brand).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">Sabhi Brands</option>' + brands.map(b=>`<option value="${esc(b)}">${esc(b)}</option>`).join('');
+  sel.value = current;
+}
+document.getElementById('brandSelect').addEventListener('change', e=>{ brandFilter = e.target.value; renderGrid(); });
+document.getElementById('priceSelect').addEventListener('change', e=>{ priceFilter = e.target.value; renderGrid(); });
 
 /* ---------- Homepage banner carousel (falls back to default HERO if none) ---------- */
 let BANNERS = [];
@@ -365,6 +448,11 @@ function getFilteredSorted(){
     const q = searchQuery.trim().toLowerCase();
     list = list.filter(p => (p.name||'').toLowerCase().includes(q) || (p.desc||'').toLowerCase().includes(q));
   }
+  if(brandFilter) list = list.filter(p => p.brand === brandFilter);
+  if(priceFilter){
+    const [lo,hi] = priceFilter.split('-').map(Number);
+    list = list.filter(p => p.price >= lo && p.price <= hi);
+  }
   if(sortMode==='price-low') list.sort((a,b)=>a.price-b.price);
   else if(sortMode==='price-high') list.sort((a,b)=>b.price-a.price);
   else if(sortMode==='newest') list.sort((a,b)=>(b.createdAt||'').localeCompare(a.createdAt||''));
@@ -374,23 +462,36 @@ function getFilteredSorted(){
 
 function productCardHTML(p){
   const off = p.mrp && p.mrp > p.price ? Math.round((1 - p.price/p.mrp)*100) : 0;
+  const hasQty = typeof p.stockQty === 'number';
+  const lowStock = hasQty && p.stockQty > 0 && p.stockQty <= 3;
+  const isWished = WISHLIST.includes(p.id);
   return `
     <div class="pcard">
       <div class="pimg-wrap" data-quickview="${p.id}" style="cursor:pointer">
-        ${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ''}
+        <button class="wish-btn ${isWished?'active':''}" data-wish="${p.id}">${isWished?'❤️':'🤍'}</button>
+        ${lowStock ? `<span class="badge low">Sirf ${p.stockQty} bache!</span>` : (p.badge ? `<span class="badge">${esc(p.badge)}</span>` : '')}
         ${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy">` : `<div class="noimg">No image</div>`}
       </div>
       <div class="pbody">
         <div class="pname" data-quickview="${p.id}" style="cursor:pointer">${esc(p.name)}</div>
         <div class="pdesc">${esc(p.desc||'')}</div>
+        ${p.reviewCount ? `<div class="rating-row">${starsHTML(p.avgRating||0)} <span>(${p.reviewCount})</span></div>` : ''}
         <div class="pprice-row">
           <span class="price">${fmt(p.price)}</span>
           ${p.mrp && p.mrp>p.price ? `<span class="mrp">${fmt(p.mrp)}</span>` : ''}
           ${off>0 ? `<span class="off">${off}% off</span>` : ''}
         </div>
-        <button class="addbtn" data-add="${p.id}">Add to Cart</button>
+        <button class="addbtn" data-add="${p.id}" ${hasQty && p.stockQty<=0 ? 'disabled' : ''}>Add to Cart</button>
       </div>
     </div>`;
+}
+
+function starsHTML(avg){
+  const full = Math.round(avg);
+  let out = '<span class="stars">';
+  for(let i=1;i<=5;i++) out += i<=full ? '★' : '<span class="empty-star">★</span>';
+  out += '</span>';
+  return out;
 }
 
 function renderGrid(){
@@ -401,6 +502,7 @@ function renderGrid(){
   g.innerHTML = list.map(productCardHTML).join('');
   document.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>addToCart(b.dataset.add));
   document.querySelectorAll('[data-quickview]').forEach(el=>el.onclick=()=>openQuickView(el.dataset.quickview));
+  document.querySelectorAll('[data-wish]').forEach(b=>b.onclick=(e)=>{ e.stopPropagation(); toggleWishlist(b.dataset.wish); });
 }
 
 /* ---------- Search & sort wiring ---------- */
@@ -417,36 +519,122 @@ function openQuickView(id){
   const p = PRODUCTS.find(x=>x.id===id); if(!p) return;
   const off = p.mrp && p.mrp > p.price ? Math.round((1 - p.price/p.mrp)*100) : 0;
   const allImages = [p.image, ...(Array.isArray(p.gallery)?p.gallery:[])].filter(Boolean);
+  const isWished = WISHLIST.includes(p.id);
+  const hasQty = typeof p.stockQty === 'number';
+  const lowStock = hasQty && p.stockQty > 0 && p.stockQty <= 3;
+  const outOfStock = hasQty && p.stockQty <= 0;
+  const related = PRODUCTS.filter(x=>x.id!==p.id && x.category===p.category).slice(0,4);
   document.getElementById('qvBox').innerHTML = `
     <button class="qv-close" id="qvClose">×</button>
     <div class="qv-grid">
       <div>
         <div class="qv-img">
-          ${p.badge ? `<span class="badge">${esc(p.badge)}</span>` : ''}
+          <button class="wish-btn ${isWished?'active':''}" id="qvWish">${isWished?'❤️':'🤍'}</button>
+          ${lowStock ? `<span class="badge low">Sirf ${p.stockQty} bache!</span>` : (p.badge ? `<span class="badge">${esc(p.badge)}</span>` : '')}
           ${allImages.length ? `<img id="qvMainImg" src="${esc(allImages[0])}" alt="${esc(p.name)}">` : `<div class="noimg" style="display:flex;align-items:center;justify-content:center;height:100%">No image</div>`}
         </div>
         ${allImages.length>1 ? `<div class="qv-thumbs">${allImages.map((img,i)=>`<img src="${esc(img)}" class="${i===0?'active':''}" data-thumb="${i}">`).join('')}</div>` : ''}
       </div>
       <div class="qv-body">
         <div class="pname">${esc(p.name)}</div>
+        ${p.reviewCount ? `<div class="rating-row">${starsHTML(p.avgRating||0)} <span>${(p.avgRating||0).toFixed(1)} · ${p.reviewCount} review${p.reviewCount!==1?'s':''}</span></div>` : `<div class="rating-row">Abhi koi review nahi — pehla review aap dein</div>`}
         <div class="pdesc">${esc(p.desc||'')}</div>
         <div class="pprice-row">
           <span class="price">${fmt(p.price)}</span>
           ${p.mrp && p.mrp>p.price ? `<span class="mrp">${fmt(p.mrp)}</span>` : ''}
           ${off>0 ? `<span class="off">${off}% off</span>` : ''}
         </div>
-        <button class="addbtn" style="margin-top:10px" id="qvAdd">Add to Cart</button>
+        ${outOfStock ? `<div class="stock-note">Abhi stock khatam — jald wapas aayega</div>` : ''}
+        <button class="addbtn" style="margin-top:10px" id="qvAdd" ${outOfStock?'disabled':''}>${outOfStock?'Out of Stock':'Add to Cart'}</button>
+      </div>
+    </div>
+    ${related.length ? `
+    <div class="related-wrap">
+      <div class="related-title">Yeh bhi dekhein</div>
+      <div class="related-grid">
+        ${related.map(r=>`
+          <div class="related-card" data-related="${r.id}">
+            ${r.image ? `<img src="${esc(r.image)}">` : `<div style="width:100%;aspect-ratio:1/1;background:#EAE2C4;border-radius:10px"></div>`}
+            <div class="rp-name">${esc(r.name)}</div>
+            <div class="rp-price">${fmt(r.price)}</div>
+          </div>
+        `).join('')}
+      </div>
+    </div>` : ''}
+    <div class="reviews-wrap">
+      <div class="related-title">Reviews</div>
+      <div id="reviewsList"><div class="sub" style="color:var(--muted);font-size:12.5px">Loading…</div></div>
+      <div class="review-form">
+        <div style="font-size:12px;color:var(--muted);font-weight:600">Apni rating dein:</div>
+        <div class="star-input" id="starInput">${[1,2,3,4,5].map(i=>`<span data-star="${i}">★</span>`).join('')}</div>
+        <input id="revName" placeholder="Aapka naam">
+        <textarea id="revText" rows="2" placeholder="Product ke baare mein likhein (optional)"></textarea>
+        <button id="revSubmit">Review Submit Karein</button>
+        <div id="revMsg" style="font-size:12px"></div>
       </div>
     </div>
   `;
   qvOverlay.classList.add('show');
   document.getElementById('qvClose').onclick = closeQuickView;
-  document.getElementById('qvAdd').onclick = ()=>{ addToCart(p.id); closeQuickView(); };
+  document.getElementById('qvAdd').onclick = ()=>{ if(!outOfStock){ addToCart(p.id); closeQuickView(); } };
+  document.getElementById('qvWish').onclick = ()=>{ toggleWishlist(p.id); openQuickView(p.id); };
   document.querySelectorAll('[data-thumb]').forEach(t=>t.onclick=()=>{
     document.getElementById('qvMainImg').src = allImages[Number(t.dataset.thumb)];
     document.querySelectorAll('[data-thumb]').forEach(x=>x.classList.remove('active'));
     t.classList.add('active');
   });
+  document.querySelectorAll('[data-related]').forEach(el=>el.onclick=()=>openQuickView(el.dataset.related));
+
+  let selectedStars = 0;
+  document.querySelectorAll('[data-star]').forEach(s=>s.onclick=()=>{
+    selectedStars = Number(s.dataset.star);
+    document.querySelectorAll('[data-star]').forEach(x=>x.classList.toggle('on', Number(x.dataset.star)<=selectedStars));
+  });
+  document.getElementById('revSubmit').onclick = ()=>submitReview(p.id, selectedStars);
+  loadReviews(p.id);
+}
+
+async function loadReviews(productId){
+  const listEl = document.getElementById('reviewsList');
+  try{
+    const snap = await db.collection('onlineProducts').doc(productId).collection('reviews').orderBy('createdAt','desc').limit(20).get();
+    if(snap.empty){ listEl.innerHTML = '<div class="sub" style="color:var(--muted);font-size:12.5px">Abhi koi review nahi hai.</div>'; return; }
+    listEl.innerHTML = snap.docs.map(d=>{
+      const r = d.data();
+      return `<div class="review-item"><div class="rname">${esc(r.name||'Customer')} ${starsHTML(r.rating||0)}</div>${r.text?`<div class="rtext">${esc(r.text)}</div>`:''}</div>`;
+    }).join('');
+  }catch(err){
+    listEl.innerHTML = '<div class="sub" style="color:var(--muted);font-size:12.5px">Reviews load nahi ho paaye.</div>';
+    console.error(err);
+  }
+}
+
+async function submitReview(productId, stars){
+  const msg = document.getElementById('revMsg');
+  const name = document.getElementById('revName').value.trim();
+  const text = document.getElementById('revText').value.trim();
+  if(!stars){ msg.style.color = '#C23A3A'; msg.textContent = 'Pehle star rating select karein.'; return; }
+  if(!name){ msg.style.color = '#C23A3A'; msg.textContent = 'Naam zaroor bharein.'; return; }
+  msg.style.color = 'var(--muted)'; msg.textContent = 'Submit ho raha hai…';
+  const prodRef = db.collection('onlineProducts').doc(productId);
+  try{
+    await prodRef.collection('reviews').add({ name, text, rating: stars, createdAt: new Date().toISOString() });
+    await db.runTransaction(async tx=>{
+      const doc = await tx.get(prodRef);
+      const d = doc.data() || {};
+      const prevCount = d.reviewCount || 0;
+      const prevAvg = d.avgRating || 0;
+      const newCount = prevCount + 1;
+      const newAvg = ((prevAvg * prevCount) + stars) / newCount;
+      tx.update(prodRef, { reviewCount: newCount, avgRating: newAvg });
+    });
+    msg.style.color = '#1F9D55'; msg.textContent = '✅ Dhanyavaad! Review post ho gaya.';
+    document.getElementById('revName').value = ''; document.getElementById('revText').value = '';
+    loadReviews(productId);
+  }catch(err){
+    msg.style.color = '#C23A3A'; msg.textContent = 'Review submit nahi ho paaya, dobara try karein.';
+    console.error(err);
+  }
 }
 function closeQuickView(){ qvOverlay.classList.remove('show'); }
 qvOverlay.addEventListener('click', e=>{ if(e.target===qvOverlay) closeQuickView(); });
@@ -460,6 +648,45 @@ function addToCart(id){
   saveCart();
   openDrawer();
   renderDrawer();
+}
+
+/* ---------- Wishlist ---------- */
+function saveWishlist(){ localStorage.setItem('wishlist', JSON.stringify(WISHLIST)); renderWishlistCount(); }
+function renderWishlistCount(){
+  const el = document.getElementById('wishlistCount');
+  el.style.display = WISHLIST.length>0 ? 'flex' : 'none';
+  el.textContent = WISHLIST.length;
+}
+function toggleWishlist(id){
+  if(WISHLIST.includes(id)) WISHLIST = WISHLIST.filter(x=>x!==id);
+  else WISHLIST.push(id);
+  saveWishlist();
+  renderGrid();
+  if(document.getElementById('wishDrawer').classList.contains('show')) renderWishDrawer();
+}
+const wishOverlay = document.getElementById('wishOverlay');
+const wishDrawer = document.getElementById('wishDrawer');
+document.getElementById('wishlistBtn').onclick = ()=>{ wishOverlay.classList.add('show'); wishDrawer.classList.add('show'); renderWishDrawer(); };
+document.getElementById('wishDrawerClose').onclick = ()=>{ wishOverlay.classList.remove('show'); wishDrawer.classList.remove('show'); };
+wishOverlay.onclick = ()=>{ wishOverlay.classList.remove('show'); wishDrawer.classList.remove('show'); };
+function renderWishDrawer(){
+  const body = document.getElementById('wishDrawerBody');
+  const items = PRODUCTS.filter(p=>WISHLIST.includes(p.id));
+  if(!items.length){ body.innerHTML = '<div class="empty" style="padding:40px 0">Wishlist khaali hai — ❤️ dabakar products save karein</div>'; return; }
+  body.innerHTML = items.map(p=>`
+    <div class="cline">
+      ${p.image ? `<img src="${esc(p.image)}">` : `<div style="width:52px;height:52px;border-radius:9px;background:#EAE2C4;flex-shrink:0"></div>`}
+      <div style="flex:1;cursor:pointer" data-openpid="${p.id}">
+        <div class="ci-name">${esc(p.name)}</div>
+        <div class="ci-price">${fmt(p.price)}</div>
+      </div>
+      <button data-add="${p.id}" style="background:var(--ink);color:#fff;border:none;padding:7px 10px;border-radius:8px;font-size:11.5px;font-weight:700;cursor:pointer">Add</button>
+      <button data-unwish="${p.id}" style="background:none;border:none;font-size:16px;cursor:pointer">🗑️</button>
+    </div>
+  `).join('');
+  body.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{ addToCart(b.dataset.add); });
+  body.querySelectorAll('[data-unwish]').forEach(b=>b.onclick=()=>toggleWishlist(b.dataset.unwish));
+  body.querySelectorAll('[data-openpid]').forEach(el=>el.onclick=()=>{ wishOverlay.classList.remove('show'); wishDrawer.classList.remove('show'); openQuickView(el.dataset.openpid); });
 }
 
 /* ---------- Cart drawer ---------- */
@@ -529,6 +756,13 @@ function showCheckoutForm(){
     <div class="form-field"><label>Aapka naam *</label><input id="cName" placeholder="Poora naam"></div>
     <div class="form-field"><label>Phone number *</label><input id="cPhone" placeholder="10-digit mobile number" inputmode="tel"></div>
     <div class="form-field"><label>Address / Pickup se lenge? (optional)</label><textarea id="cAddr" rows="2" placeholder="Delivery address ya 'Store se pickup karunga'"></textarea></div>
+    <div class="form-field"><label>Delivery Pincode check (optional)</label>
+      <div class="pincode-row">
+        <input id="cPincode" placeholder="6-digit pincode" inputmode="numeric" maxlength="6">
+        <button type="button" id="checkPincodeBtn">Check</button>
+      </div>
+      <div id="pincodeMsg" class="pincode-msg"></div>
+    </div>
     <div class="form-field"><label>Koi note (optional)</label><textarea id="cNote" rows="2" placeholder="Color, storage, ya koi aur requirement"></textarea></div>
     ${wheelWin ? `
       <div class="form-field" style="background:#FFF3E0;border-radius:9px;padding:10px 12px;font-size:13px">🎉 Aapke Spin &amp; Win discount (<b>${wheelWin.percent}% off</b>) automatically apply ho gaya hai!</div>
@@ -546,6 +780,7 @@ function showCheckoutForm(){
     <div class="note">Yeh sirf ek order <b>request</b> hai — payment abhi nahi karni. Hum aapko WhatsApp/call par confirm karenge stock aur final price ke saath. Order bhejne ke baad ek Order ID milega — usse aap "Track Order" se status check kar sakte hain.</div>
   `;
   document.getElementById('submitOrder').onclick = submitOrder;
+  document.getElementById('checkPincodeBtn').onclick = checkPincode;
   if(wheelWin){ appliedDiscount = {type:'percent', value:wheelWin.percent, code:'SPIN-WIN'}; }
   else{
     appliedDiscount = null;
@@ -555,6 +790,22 @@ function showCheckoutForm(){
 }
 
 let appliedDiscount = null;
+
+/* ---------- Delivery pincode check ---------- */
+db.collection('settings').doc('delivery').get().then(doc=>{
+  if(doc.exists){
+    SERVICEABLE_PINCODES = (doc.data().pincodes || '').split(',').map(s=>s.trim()).filter(Boolean);
+  }
+}).catch(err=>console.error('Delivery settings load nahi hue', err));
+
+function checkPincode(){
+  const val = document.getElementById('cPincode').value.trim();
+  const msg = document.getElementById('pincodeMsg');
+  if(!/^[0-9]{6}$/.test(val)){ msg.style.color='#C23A3A'; msg.textContent='Sahi 6-digit pincode daalein.'; return; }
+  if(!SERVICEABLE_PINCODES.length){ msg.style.color='var(--muted)'; msg.textContent='Delivery area list abhi set nahi hai — hum call par confirm kar denge.'; return; }
+  if(SERVICEABLE_PINCODES.includes(val)){ msg.style.color='#1F9D55'; msg.textContent='✅ Is pincode par delivery available hai!'; }
+  else{ msg.style.color='#C23A3A'; msg.textContent='❌ Is pincode par abhi delivery nahi hai — store pickup available hai.'; }
+}
 
 async function applyCouponCode(){
   const codeInput = document.getElementById('cCoupon');
@@ -686,6 +937,7 @@ document.getElementById('trackOrderBtn').onclick = ()=>{
   document.getElementById('trackOverlay').classList.add('show');
   document.getElementById('trackResult').innerHTML = '';
   document.getElementById('trackOrderId').value = '';
+  document.getElementById('trackPhone').value = '';
 };
 document.getElementById('trackClose').onclick = ()=>document.getElementById('trackOverlay').classList.remove('show');
 document.getElementById('trackSubmit').onclick = async ()=>{
@@ -713,6 +965,27 @@ document.getElementById('trackSubmit').onclick = async ()=>{
   }
 };
 
+document.getElementById('trackPhoneSubmit').onclick = async ()=>{
+  const phone = document.getElementById('trackPhone').value.trim();
+  const resultEl = document.getElementById('trackResult');
+  if(!/^[0-9]{10}$/.test(phone.replace(/\D/g,'').slice(-10))){ resultEl.innerHTML = '<span style="color:#C23A3A">Sahi 10-digit phone number daalein.</span>'; return; }
+  resultEl.textContent = 'Checking…';
+  try{
+    const getOrdersByPhone = functions.httpsCallable('getOrdersByPhone');
+    const res = await getOrdersByPhone({ phone });
+    const orders = res.data.orders || [];
+    if(!orders.length){ resultEl.innerHTML = '<span style="color:#C23A3A">Is number se koi order nahi mila.</span>'; return; }
+    resultEl.innerHTML = orders.map(o=>{
+      const statusLabel = o.status === 'new' ? '🟡 Pending' : '✅ Done';
+      const date = o.createdAt ? new Date(o.createdAt).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
+      return `<div style="border-bottom:1px solid var(--line);padding:8px 0"><b>${date}</b> — ${statusLabel}<br>Total: ${fmt(o.total)} · ${(o.items||[]).map(i=>esc(i.name)).join(', ')}</div>`;
+    }).join('');
+  }catch(err){
+    resultEl.innerHTML = '<span style="color:#C23A3A">'+(err.message==='resource-exhausted' ? 'Bahut zyada try ho gaya, thodi der baad try karein.' : 'Kuch galat ho gaya, dobara try karein.')+'</span>';
+    console.error(err);
+  }
+};
+
 renderCartCount();
 
 async function submitOrder(){
@@ -722,12 +995,13 @@ async function submitOrder(){
   const note = document.getElementById('cNote').value.trim();
   if(!name || !phone){ alert('Naam aur phone number zaroor bharein.'); return; }
   if(!/^[0-9]{10}$/.test(phone.replace(/\D/g,'').slice(-10))){ alert('Sahi 10-digit phone number daalein.'); return; }
+  const cleanPhone = phone.replace(/\D/g,'').slice(-10); // consistent format for order lookups
 
   const {subtotal, discountAmt, final} = calcTotals();
   const order = {
     items: CART.map(c=>({id:c.id, name:c.name, price:c.price, qty:c.qty})),
     subtotal, discount: discountAmt, couponCode: appliedDiscount ? appliedDiscount.code : '',
-    total: final, customerName: name, phone, address: addr, note,
+    total: final, customerName: name, phone: cleanPhone, address: addr, note,
     status: 'new', createdAt: new Date().toISOString()
   };
 
@@ -754,6 +1028,7 @@ async function submitOrder(){
 }
 
 renderCartCount();
+renderWishlistCount();
 </script>
 </body>
 </html>
