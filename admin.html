@@ -6,27 +6,28 @@
 <title>iHILLS Store — Admin (Owner Only)</title>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--ink:#241F14;--accent:#B8860B;--accent2:#D4AF37;--paper:#F8F5EC;--card:#FFFFFF;--line:#E9E1C8;--muted:#7A6F55;--red:#C23A3A;--green:#1F9D55;}
+  :root{--ink:#211C15;--accent:#0E6B4E;--accent2:#0A4F39;--gold:#B4872C;--gold2:#8F6A1E;--paper:#FAF7F1;--paper2:#F2ECE0;--card:#FFFFFF;--line:#E6DFCE;--muted:#8B8271;--red:#B0473A;--green:#1F9D55;}
   *{box-sizing:border-box;}
   body{margin:0;font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);}
   h1,h2,.brand{font-family:'Sora',sans-serif;}
   .wrap{max-width:920px;margin:0 auto;padding:24px 18px 60px;}
   .brand{font-size:20px;font-weight:800;margin-bottom:4px;}
   .sub{color:var(--muted);font-size:13px;margin-bottom:22px;}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:16px;}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:16px;box-shadow:0 2px 12px rgba(33,28,21,.05);}
   label{font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:4px;}
   input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;font-size:13.5px;font-family:inherit;margin-bottom:12px;background:#fff;color:var(--ink);}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);}
   .row{display:flex;gap:12px;flex-wrap:wrap;}
   .row > div{flex:1;min-width:160px;}
-  button{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#211C0E;border:none;padding:10px 18px;border-radius:9px;font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit;}
+  button{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none;padding:10px 18px;border-radius:9px;font-weight:700;font-size:13.5px;cursor:pointer;font-family:inherit;}
   button.outline{background:transparent;border:1px solid var(--line);color:var(--muted);}
   button.danger{background:var(--red);color:#fff;}
   table{width:100%;border-collapse:collapse;font-size:13px;}
   th,td{text-align:left;padding:8px 6px;border-bottom:1px solid var(--line);}
   th{color:var(--muted);font-size:11.5px;text-transform:uppercase;}
   .pill{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11px;font-weight:700;}
-  .pill.in{background:#E6F7EE;color:var(--green);}
-  .pill.out{background:#FDEAEA;color:var(--red);}
+  .pill.in{background:#E3F1EA;color:var(--green);}
+  .pill.out{background:#FBEAE7;color:var(--red);}
   #loginBox{max-width:340px;margin:80px auto;}
   .actions button{padding:5px 10px;font-size:12px;margin-right:4px;}
   .imp-row{display:flex;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;}
@@ -35,8 +36,8 @@
   .imp-row input{width:90px;margin:0;padding:7px 8px;font-size:12.5px;}
   .imp-row input.wide{width:130px;}
   .imp-row button{padding:7px 12px;font-size:12px;white-space:nowrap;}
-  .tag{font-size:10.5px;padding:2px 8px;border-radius:20px;background:var(--paper);color:var(--muted);border:1px solid var(--line);}
-  .tag.done{background:#E6F7EE;color:var(--green);border-color:transparent;}
+  .tag{font-size:10.5px;padding:2px 8px;border-radius:20px;background:var(--paper2);color:var(--muted);border:1px solid var(--line);}
+  .tag.done{background:#E3F1EA;color:var(--green);border-color:transparent;}
 </style>
 </head>
 <body>
@@ -86,7 +87,7 @@
         <div><label>Category *</label>
           <select id="pCat"><option value="mobile">Mobile</option><option value="accessory">Accessory</option></select>
         </div>
-        <div><label>Brand (optional, filter ke liye)</label><input id="pBrand" placeholder="e.g. Apple, Samsung, boAt"></div>
+        <div><label id="pBrandLabel">Brand (optional, filter ke liye)</label><input id="pBrand" placeholder="e.g. Apple, Samsung, boAt"></div>
       </div>
       <div class="row">
         <div><label>Selling price (₹) *</label><input id="pPrice" type="number"></div>
@@ -113,8 +114,8 @@
     <div class="card">
       <h2 style="font-size:15px;margin:0 0 12px">All Products</h2>
       <table>
-        <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Source</th><th>Status</th><th>Actions</th></tr></thead>
-        <tbody id="productRows"><tr><td colspan="6" style="color:var(--muted)">Loading…</td></tr></tbody>
+        <thead><tr><th>Name</th><th>Category</th><th>Brand/Type</th><th>Price</th><th>Source</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="productRows"><tr><td colspan="7" style="color:var(--muted)">Loading…</td></tr></tbody>
       </table>
     </div>
 
@@ -130,6 +131,8 @@
       </div>
       <label>Subtitle (optional)</label>
       <input id="bSubtitle" placeholder="e.g. Limited stock — is week hi valid">
+      <label>Link (optional — is offer/product par click karke le jaane ke liye)</label>
+      <input id="bLink" placeholder="e.g. #products ya https://wa.me/917017324455?text=BOAT%20Buds%20chahiye">
       <label><input type="checkbox" id="bActive" style="width:auto;margin-right:6px" checked>Active (website par dikhega)</label>
       <div style="margin-top:10px">
         <button id="bannerSaveBtn">Save Banner</button>
@@ -308,11 +311,12 @@ function loadProducts(){
 
 function renderRows(){
   const tb = document.getElementById('productRows');
-  if(!PRODUCTS.length){ tb.innerHTML = '<tr><td colspan="6" style="color:var(--muted)">Koi product add nahi kiya abhi tak.</td></tr>'; return; }
+  if(!PRODUCTS.length){ tb.innerHTML = '<tr><td colspan="7" style="color:var(--muted)">Koi product add nahi kiya abhi tak.</td></tr>'; return; }
   tb.innerHTML = PRODUCTS.map(p=>`
     <tr>
       <td>${esc(p.name)}</td>
       <td>${esc(p.category)}</td>
+      <td>${esc(p.brand||'—')}</td>
       <td>${fmt(p.price)}</td>
       <td>${p.sourceKey ? '<span class="tag done">Synced</span>' : '<span class="tag">Manual</span>'}</td>
       <td><span class="pill ${p.inStock?'in':'out'}">${p.inStock ? (typeof p.stockQty==='number' ? p.stockQty+' in stock' : 'In stock') : 'Hidden'}</span></td>
@@ -344,10 +348,18 @@ function editProduct(id){
   document.getElementById('pStockQty').value = typeof p.stockQty === 'number' ? p.stockQty : '';
   document.getElementById('formTitle').textContent = 'Edit Product';
   document.getElementById('cancelEdit').style.display = 'inline-block';
+  updateBrandFieldLabel();
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
 document.getElementById('cancelEdit').onclick = resetForm;
+function updateBrandFieldLabel(){
+  const isAcc = document.getElementById('pCat').value === 'accessory';
+  document.getElementById('pBrandLabel').textContent = isAcc ? 'Type (e.g. Back Cover, Tempered Glass — website par isi se category banti hai)' : 'Brand (optional, filter ke liye)';
+  document.getElementById('pBrand').placeholder = isAcc ? 'e.g. Back Cover, Tempered Glass, Bluetooth Devices' : 'e.g. Apple, Samsung, boAt';
+}
+document.getElementById('pCat').addEventListener('change', updateBrandFieldLabel);
+updateBrandFieldLabel();
 function resetForm(){
   document.getElementById('pId').value = '';
   document.getElementById('pSourceKey').value = '';
@@ -357,6 +369,7 @@ function resetForm(){
   document.getElementById('pStock').checked = true;
   document.getElementById('formTitle').textContent = 'Add New Product (Manual)';
   document.getElementById('cancelEdit').style.display = 'none';
+  updateBrandFieldLabel();
 }
 
 document.getElementById('saveBtn').onclick = async ()=>{
@@ -437,10 +450,10 @@ document.getElementById('loadStockBtn').onclick = async ()=>{
       const a = d.data();
       if(!(a.qty > 0)) return; // skip zero-stock accessories
       IMPORT_CANDIDATES.push({
-        sourceKey: 'accessory:' + d.id, category:'accessory', name: a.name, brand: a.brand||'',
+        sourceKey: 'accessory:' + d.id, category:'accessory', name: a.name, brand: a.category||a.brand||'',
         suggestedPrice: a.salePrice||0,
         stockCount: a.qty,
-        sub: `${a.qty} in stock${a.category ? ' · '+a.category : ''}`
+        sub: `${a.qty} in stock${a.category ? ' · Type: '+a.category : ''}`
       });
     });
 
@@ -534,6 +547,7 @@ function editBanner(id){
   document.getElementById('bImage').value = b.image||'';
   document.getElementById('bTitle').value = b.title||'';
   document.getElementById('bSubtitle').value = b.subtitle||'';
+  document.getElementById('bLink').value = b.link||'';
   document.getElementById('bOrder').value = b.order!=null ? b.order : 1;
   document.getElementById('bActive').checked = !!b.active;
   document.getElementById('bannerFormTitle').textContent = 'Edit Banner';
@@ -547,6 +561,7 @@ function resetBannerForm(){
   document.getElementById('bImage').value = '';
   document.getElementById('bTitle').value = '';
   document.getElementById('bSubtitle').value = '';
+  document.getElementById('bLink').value = '';
   document.getElementById('bOrder').value = 1;
   document.getElementById('bActive').checked = true;
   document.getElementById('bannerFormTitle').textContent = 'Homepage Banners (Hot Deals Slider)';
@@ -560,6 +575,7 @@ document.getElementById('bannerSaveBtn').onclick = async ()=>{
   const data = {
     image, title,
     subtitle: document.getElementById('bSubtitle').value.trim(),
+    link: document.getElementById('bLink').value.trim(),
     order: Number(document.getElementById('bOrder').value)||1,
     active: document.getElementById('bActive').checked,
     createdAt: new Date().toISOString()
