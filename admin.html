@@ -69,6 +69,17 @@
     </div>
 
     <div class="card">
+      <h2 style="font-size:15px;margin:0 0 4px">🔒 Wholesale Platform Settings</h2>
+      <div class="sub" style="margin-bottom:12px">Yeh access code sirf approved dealers ko WhatsApp par khud bhejein (jab unki request/GST verify kar lein). Code badalne se purane sabhi dealers ka access reset ho jaayega — sabko naya code dobara dena hoga.</div>
+      <div class="row">
+        <div><label>Wholesale Access Code</label><input id="wsAccessCode" placeholder="e.g. IHILLS2026"></div>
+        <div><label>Minimum Order Value (₹)</label><input id="wsMinOrder" type="number" placeholder="5000"></div>
+        <div style="display:flex;align-items:flex-end"><button id="wsSaveBtn" style="width:100%">Save Settings</button></div>
+      </div>
+      <div id="wsSaveMsg" class="sub"></div>
+    </div>
+
+    <div class="card">
       <h2 style="font-size:15px;margin:0 0 4px">Import from ERP Stock</h2>
       <div class="sub" style="margin-bottom:12px">Apne ERP ke mobiles/accessories stock se seedha import karein — dobara type nahi karna padega. Sirf website-wala price/photo/badge add kar dijiye.</div>
       <div class="row">
@@ -105,6 +116,12 @@
       <label><input type="checkbox" id="pStock" style="width:auto;margin-right:6px" checked>In stock (website par dikhega)</label>
       <label>Stock Quantity (optional — bharenge to "Sirf X bache" badge dikhega jab 3 ya kam ho)</label>
       <input id="pStockQty" type="number" placeholder="e.g. 5">
+      <div class="row" style="margin-top:6px;padding-top:12px;border-top:1px dashed #333">
+        <div><label><input type="checkbox" id="pWholesale" style="width:auto;margin-right:6px">Wholesale platform par bhi dikhayein</label></div>
+        <div><label>Wholesale price per piece (₹)</label><input id="pWholesalePrice" type="number" placeholder="e.g. 120"></div>
+        <div><label>Minimum wholesale quantity</label><input id="pWholesaleMoq" type="number" placeholder="e.g. 20"></div>
+      </div>
+      <div class="sub" style="margin:-6px 0 12px">Yeh check karne par yeh product alag "iHILLS Wholesale" platform (wholesale.html) par bhi dikhega, apni alag bulk price ke saath.</div>
       <div style="margin-top:10px">
         <button id="saveBtn">Save Product</button>
         <button class="outline" id="cancelEdit" style="display:none">Cancel Edit</button>
@@ -133,7 +150,13 @@
       <input id="bSubtitle" placeholder="e.g. Limited stock — is week hi valid">
       <label>Link (optional — is offer/product par click karke le jaane ke liye)</label>
       <input id="bLink" placeholder="e.g. #products ya https://wa.me/917017324455?text=BOAT%20Buds%20chahiye">
-      <label><input type="checkbox" id="bActive" style="width:auto;margin-right:6px" checked>Active (website par dikhega)</label>
+      <label>Kahan dikhe?</label>
+      <select id="bShowOn">
+        <option value="retail">Sirf Retail Store</option>
+        <option value="wholesale">Sirf Wholesale Platform</option>
+        <option value="both">Dono par</option>
+      </select>
+      <label style="margin-top:10px"><input type="checkbox" id="bActive" style="width:auto;margin-right:6px" checked>Active (website par dikhega)</label>
       <div style="margin-top:10px">
         <button id="bannerSaveBtn">Save Banner</button>
         <button class="outline" id="bannerCancelEdit" style="display:none">Cancel Edit</button>
@@ -194,6 +217,29 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
+
+/* ---------- Wholesale Platform Settings ---------- */
+db.collection('settings').doc('wholesaleAccess').get().then(doc=>{
+  if(doc.exists){
+    document.getElementById('wsAccessCode').value = doc.data().code || '';
+    document.getElementById('wsMinOrder').value = doc.data().minOrderValue || 5000;
+  } else {
+    document.getElementById('wsAccessCode').value = 'IHILLS2026';
+    document.getElementById('wsMinOrder').value = 5000;
+  }
+}).catch(()=>{});
+document.getElementById('wsSaveBtn').onclick = async ()=>{
+  const code = document.getElementById('wsAccessCode').value.trim();
+  const minOrder = Number(document.getElementById('wsMinOrder').value) || 5000;
+  if(!code){ alert('Access code khaali nahi ho sakta.'); return; }
+  const msgEl = document.getElementById('wsSaveMsg');
+  try{
+    await db.collection('settings').doc('wholesaleAccess').set({ code, minOrderValue: minOrder }, {merge:true});
+    msgEl.textContent = '✔ Saved — naya code ab se lagu hai.';
+    msgEl.style.color = '#2F9E5B';
+    setTimeout(()=>{ msgEl.textContent=''; }, 3000);
+  }catch(err){ msgEl.textContent = 'Save fail hua: ' + err.message; msgEl.style.color = '#C0392B'; }
+};
 let PRODUCTS = [];
 
 auth.onAuthStateChanged(async user=>{
@@ -346,6 +392,9 @@ function editProduct(id){
   document.getElementById('pGallery').value = Array.isArray(p.gallery) ? p.gallery.join('\n') : '';
   document.getElementById('pStock').checked = !!p.inStock;
   document.getElementById('pStockQty').value = typeof p.stockQty === 'number' ? p.stockQty : '';
+  document.getElementById('pWholesale').checked = !!p.wholesale;
+  document.getElementById('pWholesalePrice').value = p.wholesalePrice || '';
+  document.getElementById('pWholesaleMoq').value = p.wholesaleMoq || '';
   document.getElementById('formTitle').textContent = 'Edit Product';
   document.getElementById('cancelEdit').style.display = 'inline-block';
   updateBrandFieldLabel();
@@ -363,10 +412,11 @@ updateBrandFieldLabel();
 function resetForm(){
   document.getElementById('pId').value = '';
   document.getElementById('pSourceKey').value = '';
-  ['pName','pBrand','pMrp','pBadge','pDesc','pImage','pGallery','pStockQty'].forEach(id=>document.getElementById(id).value='');
+  ['pName','pBrand','pMrp','pBadge','pDesc','pImage','pGallery','pStockQty','pWholesalePrice','pWholesaleMoq'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('pPrice').value = '';
   document.getElementById('pCat').value = 'mobile';
   document.getElementById('pStock').checked = true;
+  document.getElementById('pWholesale').checked = false;
   document.getElementById('formTitle').textContent = 'Add New Product (Manual)';
   document.getElementById('cancelEdit').style.display = 'none';
   updateBrandFieldLabel();
@@ -390,6 +440,11 @@ document.getElementById('saveBtn').onclick = async ()=>{
     createdAt: new Date().toISOString()
   };
   if(stockQtyRaw !== '') data.stockQty = Number(stockQtyRaw);
+  data.wholesale = document.getElementById('pWholesale').checked;
+  const wsPriceRaw = document.getElementById('pWholesalePrice').value.trim();
+  const wsMoqRaw = document.getElementById('pWholesaleMoq').value.trim();
+  if(wsPriceRaw !== '') data.wholesalePrice = Number(wsPriceRaw);
+  if(wsMoqRaw !== '') data.wholesaleMoq = Number(wsMoqRaw);
   if(sourceKey) data.sourceKey = sourceKey;
   const id = document.getElementById('pId').value;
   try{
@@ -550,6 +605,7 @@ function editBanner(id){
   document.getElementById('bLink').value = b.link||'';
   document.getElementById('bOrder').value = b.order!=null ? b.order : 1;
   document.getElementById('bActive').checked = !!b.active;
+  document.getElementById('bShowOn').value = b.showOn || 'retail';
   document.getElementById('bannerFormTitle').textContent = 'Edit Banner';
   document.getElementById('bannerCancelEdit').style.display = 'inline-block';
   window.scrollTo({top:document.getElementById('bImage').getBoundingClientRect().top + window.scrollY - 80, behavior:'smooth'});
@@ -564,6 +620,7 @@ function resetBannerForm(){
   document.getElementById('bLink').value = '';
   document.getElementById('bOrder').value = 1;
   document.getElementById('bActive').checked = true;
+  document.getElementById('bShowOn').value = 'retail';
   document.getElementById('bannerFormTitle').textContent = 'Homepage Banners (Hot Deals Slider)';
   document.getElementById('bannerCancelEdit').style.display = 'none';
 }
@@ -578,6 +635,7 @@ document.getElementById('bannerSaveBtn').onclick = async ()=>{
     link: document.getElementById('bLink').value.trim(),
     order: Number(document.getElementById('bOrder').value)||1,
     active: document.getElementById('bActive').checked,
+    showOn: document.getElementById('bShowOn').value,
     createdAt: new Date().toISOString()
   };
   const id = document.getElementById('bId').value;

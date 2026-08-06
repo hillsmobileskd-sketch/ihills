@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>iHILLS Wholesale — Bulk Accessories at Dealer Rates</title>
+<meta name="description" content="iHILLS Wholesale — mobile accessories bulk mein, mix-lot allowed, dealer/reseller rate par.">
+<link rel="icon" type="image/jpeg" href="logo.jpeg">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1A1A1A; --ink-2:#262626; --paper:#FFFFFF; --card:#FFFFFF; --line:#EDEDEA;
+    --muted:#84837C; --muted-ink:#C9C9C4;
+    --copper:#BC9A52; --copper-2:#8F7434; --copper-soft:#F6EFDD;
+    --shadow-sm:0 2px 10px rgba(26,26,26,.06); --shadow-md:0 10px 30px rgba(26,26,26,.09); --shadow-lg:0 20px 54px rgba(26,26,26,.18);
+    --r-sm:8px; --r-md:14px; --r-lg:22px;
+    --font:'Poppins','Segoe UI',Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:var(--font);background:var(--paper);color:var(--ink);}
+  a{text-decoration:none;color:inherit;}
+  img{max-width:100%;display:block;}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+  .topbar{max-width:1200px;margin:0 auto;padding:12px 20px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+  .brand{display:flex;align-items:center;gap:14px;line-height:1;}
+  .brand img{height:56px;width:auto;display:block;}
+  .brand .tag{font-size:14px;font-weight:700;letter-spacing:1px;color:var(--copper-2);text-transform:uppercase;}
+  .brand .tag small{display:block;font-size:9.5px;letter-spacing:2px;color:var(--muted);font-weight:600;margin-top:2px;}
+  .back-link{font-size:13px;font-weight:600;color:var(--ink);border:1px solid var(--line);padding:9px 14px;border-radius:10px;}
+  .cart-btn{position:relative;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:9px 16px;font-weight:700;font-size:13px;cursor:pointer;color:var(--ink);}
+  .cart-count{position:absolute;top:-7px;right:-7px;background:var(--ink);color:#fff;border-radius:50%;width:19px;height:19px;font-size:10.5px;display:flex;align-items:center;justify-content:center;font-weight:700;}
+
+  /* ---- Hero ---- */
+  .ws-hero-wrap{max-width:1200px;margin:0 auto;padding:16px 20px 0;}
+  .ws-hero{background:linear-gradient(120deg,var(--ink),#000);color:#fff;background-size:cover;background-position:center;transition:opacity .2s;position:relative;overflow:hidden;display:flex;align-items:flex-end;min-height:440px;border-radius:var(--r-lg);}
+  @media (max-width:860px){ .ws-hero{min-height:0;aspect-ratio:4/5;} }
+  @media (max-width:520px){ .ws-hero{aspect-ratio:3/4;} }
+  .ws-hero.fading{opacity:.55;}
+  .ws-hero-inner{padding:36px 40px;display:flex;align-items:flex-end;justify-content:space-between;gap:28px;flex-wrap:wrap;width:100%;}
+  @media (max-width:640px){ .ws-hero-inner{padding:24px 22px;} }
+  .ws-hero-eyebrow{font-size:11.5px;letter-spacing:2.4px;text-transform:uppercase;color:var(--copper);font-weight:700;}
+  .ws-hero h1{font-size:clamp(26px,4vw,40px);margin:10px 0 12px;max-width:560px;line-height:1.15;}
+  .ws-hero p{color:var(--muted-ink);font-size:15px;max-width:520px;line-height:1.65;}
+  .ws-hero-badges{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;}
+  .ws-badge{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#fff;font-size:12.5px;font-weight:600;padding:8px 14px;border-radius:30px;}
+  .ws-hero-dots{display:flex;gap:6px;margin-top:18px;}
+  .ws-hero-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.35);border:none;cursor:pointer;padding:0;}
+  .ws-hero-dot.active{background:var(--copper);width:22px;border-radius:5px;transition:width .2s;}
+  .ws-moq-card{background:#fff;color:var(--ink);border-radius:var(--r-lg);padding:26px 28px;min-width:230px;box-shadow:var(--shadow-lg);text-align:center;}
+  .ws-moq-card .num{font-size:32px;font-weight:800;color:var(--copper-2);}
+  .ws-moq-card .lbl{font-size:12.5px;color:var(--muted);font-weight:600;margin-top:4px;}
+
+  /* ---- Toolbar ---- */
+  .toolbar-wrap{max-width:1200px;margin:0 auto;padding:18px 20px 6px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  .search-box{flex:1;min-width:200px;}
+  .search-box input{width:100%;padding:11px 14px;border:1px solid var(--line);border-radius:10px;font-family:var(--font);font-size:13.5px;}
+  .filter-select{padding:11px 14px;border:1px solid var(--line);border-radius:10px;font-family:var(--font);font-size:13.5px;background:#fff;}
+  .result-count{font-size:12.5px;color:var(--muted);padding:0 20px;max-width:1200px;margin:0 auto;display:block;}
+
+  /* ---- Grid ---- */
+  main{max-width:1200px;margin:0 auto;padding:16px 20px 60px;}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:18px;}
+  .pcard{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;box-shadow:var(--shadow-sm);transition:transform .18s,box-shadow .18s;display:flex;flex-direction:column;}
+  .pcard:hover{transform:translateY(-4px);box-shadow:var(--shadow-md);}
+  .pcard .img-wrap{aspect-ratio:1/1;background:linear-gradient(160deg,#F5F5F3,#ECECE8);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  .pcard .img-wrap img{width:100%;height:100%;object-fit:cover;}
+  .pcard .body{padding:14px 14px 16px;display:flex;flex-direction:column;gap:6px;flex:1;}
+  .pcard .pname{font-weight:700;font-size:14px;line-height:1.3;}
+  .pcard .ptype{font-size:11.5px;color:var(--muted);font-weight:600;}
+  .pcard .price-row{display:flex;align-items:baseline;gap:8px;margin-top:4px;}
+  .pcard .wprice{font-size:17px;font-weight:800;color:var(--copper-2);}
+  .pcard .per-pc{font-size:11px;color:var(--muted);}
+  .pcard .moq-note{font-size:11px;color:var(--muted);background:var(--copper-soft);padding:5px 9px;border-radius:6px;width:fit-content;font-weight:600;}
+  .qty-row{display:flex;align-items:center;gap:8px;margin-top:8px;}
+  .qty-row button{width:30px;height:30px;border-radius:8px;border:1px solid var(--line);background:#fff;font-weight:700;cursor:pointer;font-size:15px;}
+  .qty-row input{width:52px;text-align:center;border:1px solid var(--line);border-radius:8px;padding:6px 4px;font-family:var(--font);font-weight:700;}
+  .addbtn{margin-top:8px;background:linear-gradient(135deg,var(--copper),var(--copper-2));color:#fff;border:none;padding:11px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;}
+  .empty{padding:60px 20px;text-align:center;color:var(--muted);font-size:14px;grid-column:1/-1;}
+
+  /* ---- Cart Drawer ---- */
+  .overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:none;z-index:80;}
+  .overlay.show{display:block;}
+  .drawer{position:fixed;top:0;right:-420px;width:400px;max-width:92vw;height:100%;background:#fff;z-index:90;transition:right .25s;display:flex;flex-direction:column;box-shadow:var(--shadow-lg);}
+  .drawer.open{right:0;}
+  .drawer-head{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;}
+  .drawer-head h3{margin:0;font-size:16px;}
+  .drawer-close{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);}
+  .drawer-body{flex:1;overflow-y:auto;padding:12px 20px;}
+  .cart-item{display:flex;gap:10px;padding:12px 0;border-bottom:1px solid var(--line);align-items:center;}
+  .cart-item img{width:52px;height:52px;border-radius:8px;object-fit:cover;background:var(--copper-soft);}
+  .cart-item .ci-name{font-size:13px;font-weight:700;}
+  .cart-item .ci-sub{font-size:11.5px;color:var(--muted);}
+  .cart-item .ci-remove{margin-left:auto;background:none;border:none;color:var(--muted);cursor:pointer;font-size:16px;}
+  .drawer-foot{padding:16px 20px;border-top:1px solid var(--line);}
+  .total-row{display:flex;justify-content:space-between;font-weight:700;font-size:15px;margin-bottom:10px;}
+  .moq-warn{font-size:12.5px;background:#FBEFE3;color:#8F5A1E;padding:10px 12px;border-radius:8px;margin-bottom:10px;font-weight:600;}
+  .moq-ok{font-size:12.5px;background:#E3F5EA;color:#1F7A45;padding:10px 12px;border-radius:8px;margin-bottom:10px;font-weight:600;}
+  .checkout-btn{width:100%;background:linear-gradient(135deg,var(--copper),var(--copper-2));color:#fff;border:none;padding:14px;border-radius:12px;font-weight:700;font-size:14.5px;cursor:pointer;}
+  .checkout-btn:disabled{opacity:.5;cursor:not-allowed;}
+
+  footer{background:var(--ink);color:var(--muted-ink);padding:26px 20px;text-align:center;font-size:12px;margin-top:20px;}
+  footer a{color:var(--copper);}
+
+  /* ---- Access Gate ---- */
+  .gate{position:fixed;inset:0;background:linear-gradient(150deg,var(--ink),#000);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .gate-box{background:#fff;border-radius:var(--r-lg);padding:34px 30px;max-width:380px;width:100%;box-shadow:var(--shadow-lg);text-align:center;}
+  .gate-box img{height:52px;margin:0 auto 14px;}
+  .gate-box h2{font-size:19px;margin:0 0 6px;}
+  .gate-box p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:18px;}
+  .gate-box input{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:10px;font-family:var(--font);font-size:15px;text-align:center;letter-spacing:2px;font-weight:700;text-transform:uppercase;}
+  .gate-box .gate-btn{width:100%;margin-top:12px;background:linear-gradient(135deg,var(--copper),var(--copper-2));color:#fff;border:none;padding:13px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;}
+  .gate-err{color:#B0473A;font-size:12.5px;font-weight:600;margin-top:8px;display:none;}
+  .gate-request{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);}
+  .gate-request summary{font-size:12.5px;color:var(--copper-2);font-weight:700;cursor:pointer;}
+  .gate-request .rf{margin-top:12px;display:flex;flex-direction:column;gap:8px;}
+  .gate-request input{text-transform:none;letter-spacing:normal;font-weight:400;font-size:13px;text-align:left;padding:10px 12px;}
+  .gate-request .req-btn{background:var(--ink);color:#fff;border:none;padding:11px;border-radius:10px;font-weight:700;font-size:13px;cursor:pointer;}
+  .app-hidden{display:none;}
+</style>
+</head>
+<body>
+
+<div class="gate" id="accessGate">
+  <div class="gate-box">
+    <img src="logo.jpeg" alt="iHILLS">
+    <h2>Wholesale Access</h2>
+    <p>Yeh page sirf authorized dealers/resellers ke liye hai. Access code daalein.</p>
+    <input id="gateCode" placeholder="ACCESS CODE" autocomplete="off">
+    <button class="gate-btn" id="gateSubmit">Enter Wholesale Platform</button>
+    <div class="gate-err" id="gateErr">Galat code — dobara try karein ya neeche se request bhejein.</div>
+    <details class="gate-request">
+      <summary>Naye Dealer? Access request karein →</summary>
+      <div class="rf">
+        <input id="reqName" placeholder="Aapka naam">
+        <input id="reqShop" placeholder="Shop / Business ka naam">
+        <input id="reqPhone" placeholder="Phone number" inputmode="tel">
+        <input id="reqGst" placeholder="GST number (agar hai)">
+        <button class="req-btn" id="reqSend">WhatsApp par request bhejein</button>
+      </div>
+    </details>
+  </div>
+</div>
+
+<div id="appRoot" class="app-hidden">
+<header>
+  <div class="topbar">
+    <a href="index.html" class="brand">
+      <img src="logo.jpeg" alt="iHILLS">
+      <div class="tag">Wholesale<small>Bulk Accessories</small></div>
+    </a>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <a href="index.html" class="back-link">← Retail Store</a>
+      <button class="cart-btn" id="cartOpenBtn">🧺 Cart<span class="cart-count" id="cartCount">0</span></button>
+    </div>
+  </div>
+</header>
+
+<div class="ws-hero-wrap">
+<div class="ws-hero" id="wsHeroBanner">
+  <div class="ws-hero-inner">
+    <div>
+      <div class="ws-hero-eyebrow" id="wsHeroEyebrow">iHILLS Wholesale</div>
+      <h1 id="wsHeroTitle">Accessories bulk mein, dealer/reseller rate par.</h1>
+      <p id="wsHeroSub">Cases, chargers, tempered glass aur accessories — mix-lot allowed, alag-alag items milaakar bhi minimum order value poora kar sakte hain.</p>
+      <div class="ws-hero-badges" id="wsHeroBadges">
+        <span class="ws-badge">✔ Mix Lot Allowed</span>
+        <span class="ws-badge">✔ No Lot System</span>
+        <span class="ws-badge">✔ Wholesale Rates</span>
+      </div>
+      <div class="ws-hero-dots" id="wsHeroDots" style="display:none"></div>
+    </div>
+    <div class="ws-moq-card">
+      <div class="num" id="moqDisplay">₹5,000</div>
+      <div class="lbl">Minimum Order Value</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="toolbar-wrap">
+  <div class="search-box"><input id="searchInput" placeholder="Search accessories…"></div>
+  <select class="filter-select" id="typeSelect"><option value="">Sabhi Types</option></select>
+  <select class="filter-select" id="sortSelect">
+    <option value="featured">Sort: Featured</option>
+    <option value="price-low">Price: Low to High</option>
+    <option value="price-high">Price: High to Low</option>
+  </select>
+</div>
+<span class="result-count" id="resultCount"></span>
+
+<main>
+  <div class="grid" id="grid"><div class="empty">Loading wholesale products…</div></div>
+</main>
+
+<footer>
+  iHILLS Wholesale &nbsp;·&nbsp; Nagar Palika Gate ke paas, Sikandrabad, UP – 203205 &nbsp;·&nbsp;
+  <a href="index.html">Retail Store par jaayein</a> &nbsp;·&nbsp; Order sirf WhatsApp par confirm hota hai
+</footer>
+
+<div class="overlay" id="overlay"></div>
+<div class="drawer" id="cartDrawer">
+  <div class="drawer-head"><h3>Wholesale Cart</h3><button class="drawer-close" id="drawerClose">×</button></div>
+  <div class="drawer-body" id="drawerBody"></div>
+  <div class="drawer-foot" id="drawerFoot" style="display:none">
+    <div id="moqMsg"></div>
+    <div class="total-row"><span>Total</span><span id="cartTotal">₹0</span></div>
+    <button class="checkout-btn" id="goCheckout">Send Wholesale Order Request</button>
+  </div>
+</div>
+</div>
+<!-- /appRoot -->
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ============ CONFIG ============ */
+const firebaseConfig = {
+  apiKey: "AIzaSyCk_K4KAieJdfABIhOBz9HEsiVBVougyXI",
+  authDomain: "hillsmobileerp.firebaseapp.com",
+  projectId: "hillsmobileerp",
+  storageBucket: "hillsmobileerp.firebasestorage.app",
+  messagingSenderId: "153415150787",
+  appId: "1:153415150787:web:7180feacf04987f4910676"
+};
+const SHOP_WHATSAPP = "917017324455";
+let MIN_ORDER_VALUE = 5000; // Firestore settings/wholesaleAccess.minOrderValue se override hota hai (admin panel se badlein)
+/* ================================= */
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+function esc(s){ return (s||'').toString().replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+function fmt(n){ return '₹' + Number(n||0).toLocaleString('en-IN'); }
+
+/* ---------- Access Gate ---------- */
+const DEFAULT_ACCESS_CODE = "IHILLS2026"; // agar Firestore mein code set na ho to yeh fallback chalega
+let VALID_CODE = DEFAULT_ACCESS_CODE;
+
+function unlockApp(){
+  document.getElementById('accessGate').style.display = 'none';
+  document.getElementById('appRoot').classList.remove('app-hidden');
+  initWholesaleApp();
+}
+
+async function checkGateOnLoad(){
+  try{
+    const doc = await db.collection('settings').doc('wholesaleAccess').get();
+    if(doc.exists && doc.data().code) VALID_CODE = doc.data().code;
+    if(doc.exists && doc.data().minOrderValue) MIN_ORDER_VALUE = doc.data().minOrderValue;
+  }catch(e){ console.warn('Access code fetch fail, using default.'); }
+  document.getElementById('moqDisplay').textContent = fmt(MIN_ORDER_VALUE);
+  if(localStorage.getItem('wholesaleUnlocked') === VALID_CODE){
+    unlockApp();
+  }
+}
+checkGateOnLoad();
+
+document.getElementById('gateSubmit').onclick = ()=>{
+  const entered = document.getElementById('gateCode').value.trim().toUpperCase();
+  if(entered && entered === VALID_CODE.toUpperCase()){
+    localStorage.setItem('wholesaleUnlocked', VALID_CODE);
+    unlockApp();
+  } else {
+    document.getElementById('gateErr').style.display = 'block';
+  }
+};
+document.getElementById('gateCode').addEventListener('keydown', e=>{ if(e.key==='Enter') document.getElementById('gateSubmit').click(); });
+
+document.getElementById('reqSend').onclick = ()=>{
+  const name = document.getElementById('reqName').value.trim();
+  const shop = document.getElementById('reqShop').value.trim();
+  const phone = document.getElementById('reqPhone').value.trim();
+  const gst = document.getElementById('reqGst').value.trim();
+  if(!name || !shop || !phone){ alert('Naam, shop naam aur phone number zaroor bharein.'); return; }
+  const msg = `Hi, mujhe iHILLS WHOLESALE platform ka access chahiye.\n\nNaam: ${name}\nShop: ${shop}\nPhone: ${phone}\nGST: ${gst || 'N/A'}`;
+  window.open(`https://wa.me/917017324455?text=${encodeURIComponent(msg)}`, '_blank');
+};
+
+/* ---------- Main wholesale app (runs only after unlock) ---------- */
+function initWholesaleApp(){
+
+let PRODUCTS = [];
+let CART = JSON.parse(sessionStorage.getItem('wholesaleCart') || '[]');
+let typeFilter = '';
+let sortBy = 'featured';
+
+document.getElementById('moqDisplay').textContent = fmt(MIN_ORDER_VALUE);
+
+/* ---------- Wholesale Hero Banner Slider ---------- */
+const DEFAULT_WS_HERO = {
+  eyebrow: 'iHILLS Wholesale',
+  title: 'Accessories bulk mein, dealer/reseller rate par.',
+  sub: 'Cases, chargers, tempered glass aur accessories — mix-lot allowed, alag-alag items milaakar bhi minimum order value poora kar sakte hain.'
+};
+let WS_BANNERS = [];
+let wsBannerIndex = 0;
+let wsBannerTimer = null;
+
+db.collection('banners').where('active','==',true).orderBy('order','asc').onSnapshot(snap=>{
+  WS_BANNERS = snap.docs.map(d=>({id:d.id, ...d.data()})).filter(b=>b.showOn==='wholesale' || b.showOn==='both');
+  clearInterval(wsBannerTimer);
+  const dotsWrap = document.getElementById('wsHeroDots');
+  if(!WS_BANNERS.length){
+    renderWsBannerSlide(-1);
+    dotsWrap.style.display = 'none';
+    return;
+  }
+  dotsWrap.style.display = WS_BANNERS.length > 1 ? 'flex' : 'none';
+  dotsWrap.innerHTML = WS_BANNERS.map((b,i)=>`<button class="ws-hero-dot${i===0?' active':''}" data-wdot="${i}" aria-label="Slide ${i+1}"></button>`).join('');
+  dotsWrap.querySelectorAll('[data-wdot]').forEach(btn=>btn.onclick=()=>goToWsBannerSlide(Number(btn.dataset.wdot)));
+  wsBannerIndex = 0;
+  renderWsBannerSlide(0);
+  if(WS_BANNERS.length > 1){
+    wsBannerTimer = setInterval(()=>{ goToWsBannerSlide((wsBannerIndex+1) % WS_BANNERS.length); }, 4500);
+  }
+}, err=>{ console.warn('Wholesale banners load nahi ho paaye', err); renderWsBannerSlide(-1); });
+
+function goToWsBannerSlide(i){
+  wsBannerIndex = i;
+  const banner = document.getElementById('wsHeroBanner');
+  banner.classList.add('fading');
+  setTimeout(()=>{ renderWsBannerSlide(i); banner.classList.remove('fading'); }, 150);
+  document.querySelectorAll('[data-wdot]').forEach((d,idx)=>d.classList.toggle('active', idx===i));
+}
+
+function renderWsBannerSlide(i){
+  const banner = document.getElementById('wsHeroBanner');
+  const b = i>=0 ? WS_BANNERS[i] : null;
+  if(b && b.image){
+    banner.style.backgroundImage = `linear-gradient(to top, rgba(0,0,0,.68) 0%, rgba(0,0,0,.15) 55%), url("${esc(b.image)}")`;
+  } else {
+    banner.style.backgroundImage = '';
+  }
+  document.getElementById('wsHeroEyebrow').textContent = (b && b.eyebrow) || DEFAULT_WS_HERO.eyebrow;
+  document.getElementById('wsHeroTitle').textContent = (b && b.title) || DEFAULT_WS_HERO.title;
+  document.getElementById('wsHeroSub').textContent = (b && b.subtitle) || DEFAULT_WS_HERO.sub;
+  document.getElementById('wsHeroBadges').style.display = b ? 'none' : 'flex';
+}
+
+db.collection('onlineProducts').where('wholesale','==',true).onSnapshot(snap=>{
+  PRODUCTS = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  renderTypeFilter();
+  renderGrid();
+}, err=>{
+  document.getElementById('grid').innerHTML = '<div class="empty">Wholesale products load nahi ho paaye.</div>';
+  console.error(err);
+});
+
+function renderTypeFilter(){
+  const sel = document.getElementById('typeSelect');
+  const current = sel.value;
+  const types = [...new Set(PRODUCTS.map(p=>p.brand).filter(Boolean))].sort();
+  sel.innerHTML = '<option value="">Sabhi Types</option>' + types.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');
+  sel.value = types.includes(current) ? current : '';
+}
+document.getElementById('typeSelect').addEventListener('change', e=>{ typeFilter=e.target.value; renderGrid(); });
+document.getElementById('sortSelect').addEventListener('change', e=>{ sortBy=e.target.value; renderGrid(); });
+document.getElementById('searchInput').addEventListener('input', renderGrid);
+
+function renderGrid(){
+  const grid = document.getElementById('grid');
+  const q = document.getElementById('searchInput').value.trim().toLowerCase();
+  let list = PRODUCTS.slice();
+  if(typeFilter) list = list.filter(p=>p.brand===typeFilter);
+  if(q) list = list.filter(p=>(p.name||'').toLowerCase().includes(q));
+  const wp = p => (typeof p.wholesalePrice==='number' && p.wholesalePrice>0) ? p.wholesalePrice : p.price;
+  if(sortBy==='price-low') list.sort((a,b)=>wp(a)-wp(b));
+  if(sortBy==='price-high') list.sort((a,b)=>wp(b)-wp(a));
+  document.getElementById('resultCount').textContent = list.length + ' products';
+  if(!list.length){ grid.innerHTML = '<div class="empty">Abhi koi wholesale product available nahi hai. WhatsApp par poochh lein.</div>'; return; }
+  grid.innerHTML = list.map(p=>{
+    const price = wp(p);
+    const moq = p.wholesaleMoq || 1;
+    const inCart = CART.find(c=>c.id===p.id);
+    const qty = inCart ? inCart.qty : moq;
+    return `
+    <div class="pcard">
+      <div class="img-wrap">${p.image ? `<img src="${esc(p.image)}" alt="${esc(p.name)}">` : '📦'}</div>
+      <div class="body">
+        ${p.brand ? `<div class="ptype">${esc(p.brand)}</div>` : ''}
+        <div class="pname">${esc(p.name)}</div>
+        <div class="price-row"><span class="wprice">${fmt(price)}</span><span class="per-pc">/ piece</span></div>
+        ${p.wholesaleMoq ? `<div class="moq-note">Min. ${p.wholesaleMoq} pieces</div>` : ''}
+        <div class="qty-row">
+          <button data-dec="${p.id}">−</button>
+          <input type="number" id="qty-${p.id}" value="${qty}" min="${moq}">
+          <button data-inc="${p.id}">+</button>
+        </div>
+        <button class="addbtn" data-add="${p.id}">Add to Wholesale Cart</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  grid.querySelectorAll('[data-inc]').forEach(b=>b.onclick=()=>{ const i=document.getElementById('qty-'+b.dataset.inc); i.value=Number(i.value)+1; });
+  grid.querySelectorAll('[data-dec]').forEach(b=>b.onclick=()=>{ const i=document.getElementById('qty-'+b.dataset.dec); const p=PRODUCTS.find(x=>x.id===b.dataset.dec); const moq=p.wholesaleMoq||1; i.value=Math.max(moq, Number(i.value)-1); });
+  grid.querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{
+    const p = PRODUCTS.find(x=>x.id===b.dataset.add);
+    const qtyInput = document.getElementById('qty-'+p.id);
+    const moq = p.wholesaleMoq || 1;
+    let qty = Number(qtyInput.value) || moq;
+    if(qty < moq){ qty = moq; qtyInput.value = moq; }
+    const price = (typeof p.wholesalePrice==='number' && p.wholesalePrice>0) ? p.wholesalePrice : p.price;
+    const existing = CART.find(c=>c.id===p.id);
+    if(existing) existing.qty = qty;
+    else CART.push({id:p.id, name:p.name, image:p.image||'', price, qty});
+    saveCart(); renderCart(); openCart();
+  });
+}
+
+function saveCart(){ sessionStorage.setItem('wholesaleCart', JSON.stringify(CART)); renderCartCount(); }
+function renderCartCount(){ document.getElementById('cartCount').textContent = CART.reduce((s,c)=>s+c.qty,0); }
+function cartTotal(){ return CART.reduce((s,c)=>s+c.price*c.qty,0); }
+
+function renderCart(){
+  const body = document.getElementById('drawerBody');
+  const foot = document.getElementById('drawerFoot');
+  if(!CART.length){
+    body.innerHTML = '<div class="empty">Cart khaali hai — accessories add karein.</div>';
+    foot.style.display = 'none';
+    return;
+  }
+  body.innerHTML = CART.map(c=>`
+    <div class="cart-item">
+      <img src="${esc(c.image)}" onerror="this.style.display='none'">
+      <div>
+        <div class="ci-name">${esc(c.name)}</div>
+        <div class="ci-sub">${c.qty} × ${fmt(c.price)} = ${fmt(c.qty*c.price)}</div>
+      </div>
+      <button class="ci-remove" data-remove="${c.id}">×</button>
+    </div>`).join('');
+  body.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{
+    CART = CART.filter(c=>c.id!==b.dataset.remove); saveCart(); renderCart(); renderGrid();
+  });
+  const total = cartTotal();
+  document.getElementById('cartTotal').textContent = fmt(total);
+  const moqMsg = document.getElementById('moqMsg');
+  const checkoutBtn = document.getElementById('goCheckout');
+  if(total < MIN_ORDER_VALUE){
+    moqMsg.innerHTML = `<div class="moq-warn">Minimum order ${fmt(MIN_ORDER_VALUE)} hai — abhi ${fmt(MIN_ORDER_VALUE-total)} aur add karein.</div>`;
+    checkoutBtn.disabled = true;
+  } else {
+    moqMsg.innerHTML = `<div class="moq-ok">✔ Minimum order value poora ho gaya — order bhej sakte hain.</div>`;
+    checkoutBtn.disabled = false;
+  }
+  foot.style.display = 'block';
+}
+
+function openCart(){ document.getElementById('overlay').classList.add('show'); document.getElementById('cartDrawer').classList.add('open'); }
+function closeCart(){ document.getElementById('overlay').classList.remove('show'); document.getElementById('cartDrawer').classList.remove('open'); }
+document.getElementById('cartOpenBtn').onclick = ()=>{ renderCart(); openCart(); };
+document.getElementById('drawerClose').onclick = closeCart;
+document.getElementById('overlay').onclick = closeCart;
+
+document.getElementById('goCheckout').onclick = ()=>{
+  if(cartTotal() < MIN_ORDER_VALUE) return;
+  let msg = 'Hi, mujhe ye accessories WHOLESALE mein chahiye:\n\n';
+  CART.forEach(c=>{ msg += `• ${c.name} — ${c.qty} pcs × ${fmt(c.price)} = ${fmt(c.qty*c.price)}\n`; });
+  msg += `\nTotal: ${fmt(cartTotal())}\n\nRate/availability confirm kar dijiye.`;
+  window.open(`https://wa.me/${SHOP_WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank');
+};
+
+renderCartCount();
+
+} // end initWholesaleApp
+</script>
+</body>
+</html>
