@@ -269,15 +269,23 @@
   .note{font-size:11.5px;color:var(--muted);margin-top:10px;line-height:1.5;}
 
   /* ================= Why-us strip ================= */
-  /* ================= Shop by Brand — circular collection rail (Cloudbuzz-style) ================= */
-  .coll-rail-wrap{max-width:1200px;margin:0 auto;padding:36px 20px 8px;}
-  .coll-rail-head h3{font-size:20px;font-weight:700;color:var(--ink);}
-  .coll-rail{display:flex;gap:20px;overflow-x:auto;padding:20px 2px 8px;scrollbar-width:none;}
-  .coll-rail::-webkit-scrollbar{display:none;}
-  .coll-item{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;width:88px;}
-  .coll-circle{width:76px;height:76px;border-radius:50%;background:linear-gradient(150deg,var(--ink),#000);color:var(--copper);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-weight:700;font-size:22px;border:2px solid var(--copper-soft);transition:transform .18s,border-color .18s;}
-  .coll-item:hover .coll-circle{transform:translateY(-3px);border-color:var(--copper);}
-  .coll-item span.coll-label{font-size:12px;font-weight:600;color:var(--ink);text-align:center;line-height:1.3;}
+  /* ================= Browse Categories — big professional catalog grid ================= */
+  .catzone{max-width:1200px;margin:0 auto;padding:34px 20px 10px;}
+  .catzone-head{text-align:center;margin-bottom:26px;}
+  .catzone-head h2{font-size:clamp(22px,3vw,30px);font-weight:700;color:var(--ink);}
+  .catzone-head p{color:var(--muted);font-size:14px;margin-top:6px;}
+  .cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:20px;}
+  .cat-card{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;cursor:pointer;transition:transform .2s,box-shadow .2s,border-color .2s;text-align:center;}
+  .cat-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-lg);border-color:var(--copper);}
+  .cat-card-media{height:120px;background:linear-gradient(150deg,var(--ink),#000);display:flex;align-items:center;justify-content:center;font-size:40px;overflow:hidden;}
+  .cat-card-media img{width:100%;height:100%;object-fit:cover;}
+  .cat-card-body{padding:14px 10px 18px;}
+  .cat-card-body h4{font-size:14.5px;font-weight:700;color:var(--ink);margin:0 0 4px;}
+  .cat-card-body span{font-size:11.5px;color:var(--muted);font-weight:600;}
+  .cat-card.all-card .cat-card-media{background:linear-gradient(135deg,var(--copper),var(--copper-2));}
+
+  .back-to-cats{display:none;max-width:1200px;margin:14px auto 0;padding:0 20px;}
+  .back-to-cats button{background:none;border:none;color:var(--copper-2);font-weight:700;font-size:13.5px;cursor:pointer;padding:0;}
 
   .wholesale-band{max-width:1200px;margin:8px auto 0;padding:0 20px;}
   .wholesale-inner{background:linear-gradient(120deg,var(--ink),#000);border-radius:var(--r-lg);padding:32px 28px;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;}
@@ -381,9 +389,16 @@
   </div>
 </div>
 
-<div class="coll-rail-wrap">
-  <div class="coll-rail-head"><h3>Shop by Brand</h3></div>
-  <div class="coll-rail" id="collRail"></div>
+<div class="catzone">
+  <div class="catzone-head">
+    <h2>Kya Chahiye Aapko?</h2>
+    <p>Category par click karein — sabhi products wahin mil jaayenge</p>
+  </div>
+  <div class="cat-grid" id="catGrid"></div>
+</div>
+
+<div class="back-to-cats" id="backToCats">
+  <button id="backToCatsBtn">← Sabhi Categories par wapas jaayein</button>
 </div>
 
 <div class="wholesale-band">
@@ -397,9 +412,9 @@
   </div>
 </div>
 
-<div class="tabs-wrap" id="tabsWrap"></div>
+<div class="tabs-wrap" id="tabsWrap" style="display:none"></div>
 
-<div class="toolbar-wrap">
+<div class="toolbar-wrap" id="toolbarWrap1" style="display:none">
   <div class="search-box"><input id="searchInput" placeholder="Search mobiles, accessories…"></div>
   <select class="filter-select" id="brandSelect"><option value="">Sabhi Brands</option></select>
   <select class="filter-select" id="priceSelect">
@@ -417,11 +432,11 @@
     <option value="newest">Newest First</option>
   </select>
 </div>
-<div class="toolbar-wrap" style="margin-top:2px">
+<div class="toolbar-wrap" id="toolbarWrap2" style="display:none;margin-top:2px">
   <span class="result-count" id="resultCount"></span>
 </div>
 
-<main id="products">
+<main id="products" style="display:none">
   <div class="grid" id="grid"><div class="empty">Loading products…</div></div>
 </main>
 
@@ -477,7 +492,7 @@
     </div>
     <div>
       <h4>Quick Links</h4>
-      <a href="#products">Products</a>
+      <a href="#products" id="footProducts">Products</a>
       <a href="#" id="footTrack">Track Order</a>
     </div>
   </div>
@@ -602,14 +617,14 @@ db.collection('onlineProducts').where('inStock','==',true).onSnapshot(snap=>{
   renderTabs();
   renderBrandFilter();
   renderQuickNav();
-  renderCollRail();
+  renderCatGrid();
   renderGrid();
   renderWishlistCount();
   // Kisi ne product ka shared link khola ho (?product=xxxx) to seedha
   // uska Quick View khol dein — sirf pehli baar jab data load ho.
   if(!deepLinkOpened){
     const sharedId = new URLSearchParams(location.search).get('product');
-    if(sharedId && PRODUCTS.some(p=>p.id===sharedId)){ openQuickView(sharedId); }
+    if(sharedId && PRODUCTS.some(p=>p.id===sharedId)){ openQuickView(sharedId); showProductsView(); }
     deepLinkOpened = true;
   }
 }, err=>{
@@ -617,23 +632,78 @@ db.collection('onlineProducts').where('inStock','==',true).onSnapshot(snap=>{
   console.error(err);
 });
 
-/* ---------- Shop by Brand — circular rail, built from live product brands ---------- */
-function renderCollRail(){
-  const wrap = document.getElementById('collRail');
-  if(!wrap) return;
+/* ---------- Show/hide flow: category grid first, products only after a choice ---------- */
+function showProductsView(){
+  document.querySelector('.catzone').style.display = 'none';
+  document.getElementById('backToCats').style.display = 'block';
+  document.getElementById('tabsWrap').style.display = 'block';
+  document.getElementById('toolbarWrap1').style.display = 'flex';
+  document.getElementById('toolbarWrap2').style.display = 'flex';
+  document.getElementById('products').style.display = 'block';
+  document.getElementById('products').scrollIntoView({behavior:'smooth', block:'start'});
+}
+function showCategoriesView(){
+  document.querySelector('.catzone').style.display = 'block';
+  document.getElementById('backToCats').style.display = 'none';
+  document.getElementById('tabsWrap').style.display = 'none';
+  document.getElementById('toolbarWrap1').style.display = 'none';
+  document.getElementById('toolbarWrap2').style.display = 'none';
+  document.getElementById('products').style.display = 'none';
+  document.querySelector('.catzone').scrollIntoView({behavior:'smooth', block:'start'});
+}
+document.getElementById('backToCatsBtn').onclick = showCategoriesView;
+document.querySelector('.hero-cta').addEventListener('click', e=>{
+  e.preventDefault();
+  activeCat = 'all'; brandFilter = '';
+  document.getElementById('brandSelect').value = '';
+  renderTabs(); renderQuickNav(); renderGrid();
+  showProductsView();
+});
+document.getElementById('footProducts').addEventListener('click', e=>{
+  e.preventDefault();
+  activeCat = 'all'; brandFilter = '';
+  document.getElementById('brandSelect').value = '';
+  renderTabs(); renderQuickNav(); renderGrid();
+  showProductsView();
+});
+
+/* ---------- Browse Categories — big catalog grid: admin-managed types + live brands + "All" ---------- */
+let SHOP_CATS = [];
+db.collection('shopCategories').orderBy('order','asc').onSnapshot(snap=>{
+  SHOP_CATS = snap.docs.map(d=>({id:d.id, ...d.data()})).filter(c=>c.active);
+  renderCatGrid();
+}, err=>{ console.warn('Shop categories load nahi ho payi', err); });
+
+function renderCatGrid(){
+  const grid = document.getElementById('catGrid');
+  if(!grid) return;
   const brands = [...new Set(PRODUCTS.map(p=>p.brand).filter(Boolean))].sort();
-  if(!brands.length){ wrap.innerHTML=''; return; }
-  wrap.innerHTML = brands.map(b=>`
-    <div class="coll-item" data-brand="${esc(b)}">
-      <div class="coll-circle">${esc(b.slice(0,2).toUpperCase())}</div>
-      <span class="coll-label">${esc(b)}</span>
+  let tiles = [];
+  tiles.push({ all:true, name:'Sabhi Products', icon:'🛍️', count: PRODUCTS.length });
+  SHOP_CATS.forEach(c=>{
+    const count = PRODUCTS.filter(p=>{
+      if((p.category||'mobile') !== (c.parent||'mobile')) return false;
+      if(c.typeFilter) return (p.brand||'').toLowerCase() === c.typeFilter.toLowerCase();
+      return true;
+    }).length;
+    tiles.push({ cat:c.parent||'mobile', type:c.typeFilter||'', name:c.name, icon:c.icon||'📦', iconImage:c.iconImage||'', count });
+  });
+  brands.forEach(b=>{
+    const count = PRODUCTS.filter(p=>p.brand===b).length;
+    tiles.push({ cat:'', type:b, name:b, icon:b.slice(0,2).toUpperCase(), count });
+  });
+  grid.innerHTML = tiles.map(t=>`
+    <div class="cat-card${t.all?' all-card':''}" data-cat="${esc(t.cat||'')}" data-type="${esc(t.type||'')}" data-all="${t.all?'1':''}">
+      <div class="cat-card-media">${t.iconImage ? `<img src="${esc(t.iconImage)}" onerror="this.style.display='none';this.parentElement.textContent='${esc(t.icon)}'">` : esc(t.icon)}</div>
+      <div class="cat-card-body"><h4>${esc(t.name)}</h4><span>${t.count} products</span></div>
     </div>`).join('');
-  wrap.querySelectorAll('.coll-item').forEach(el=>{
+  grid.querySelectorAll('.cat-card').forEach(el=>{
     el.onclick = ()=>{
-      brandFilter = el.dataset.brand;
+      if(el.dataset.all){ activeCat = 'all'; brandFilter = ''; }
+      else { activeCat = el.dataset.cat || 'all'; brandFilter = el.dataset.type || ''; }
       document.getElementById('brandSelect').value = brandFilter;
-      renderQuickNav(); renderGrid();
-      document.getElementById('products').scrollIntoView({behavior:'smooth', block:'start'});
+      renderTabs(); renderQuickNav(); renderBrandFilter(); renderGrid();
+      showProductsView();
     };
   });
 }
@@ -676,13 +746,13 @@ function renderQuickNav(){
     brandFilter = '';
     document.getElementById('brandSelect').value = '';
     renderTabs(); renderQuickNav(); renderBrandFilter(); renderGrid();
-    document.getElementById('products').scrollIntoView({behavior:'smooth'});
+    showProductsView();
   });
   wrap.querySelectorAll('[data-qnbrand]').forEach(btn=>btn.onclick = ()=>{
     brandFilter = btn.dataset.qnbrand;
     document.getElementById('brandSelect').value = brandFilter;
     renderQuickNav(); renderGrid();
-    document.getElementById('products').scrollIntoView({behavior:'smooth'});
+    showProductsView();
   });
 }
 
@@ -1320,7 +1390,8 @@ document.getElementById('trackPhoneSubmit').onclick = async ()=>{
     const orders = res.data.orders || [];
     if(!orders.length){ resultEl.innerHTML = '<span style="color:#C0392B">Is number se koi order nahi mila.</span>'; return; }
     resultEl.innerHTML = orders.map(o=>{
-      const statusLabel = o.status === 'new' ? '🟡 Pending' : '✅ Done';
+      const statusMap = {new:'🟡 Order Received', confirmed:'🔵 Confirmed', delivered:'✅ Delivered', cancelled:'❌ Cancelled'};
+      const statusLabel = statusMap[o.status] || '🟡 Pending';
       const date = o.createdAt ? new Date(o.createdAt).toLocaleString('en-IN',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
       return `<div style="border-bottom:1px solid var(--line);padding:8px 0"><b>${date}</b> — ${statusLabel}<br>Total: ${fmt(o.total)} · ${(o.items||[]).map(i=>esc(i.name)).join(', ')}</div>`;
     }).join('');

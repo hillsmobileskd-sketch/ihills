@@ -38,6 +38,20 @@
   .imp-row button{padding:7px 12px;font-size:12px;white-space:nowrap;}
   .tag{font-size:10.5px;padding:2px 8px;border-radius:20px;background:var(--paper2);color:var(--muted);border:1px solid var(--line);}
   .tag.done{background:#E3F1EA;color:var(--green);border-color:transparent;}
+  .pill.confirmed{background:#EAF1FB;color:#2D6CB0;}
+  .pill.delivered{background:#E3F1EA;color:var(--green);}
+  .pill.cancelled{background:#FBEAE7;color:var(--red);}
+  .stat-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+  .stat-box{flex:1;min-width:100px;background:var(--paper2);border-radius:10px;padding:10px 12px;text-align:center;}
+  .stat-box .n{font-size:19px;font-weight:800;font-family:'Sora',sans-serif;}
+  .stat-box .l{font-size:10.5px;color:var(--muted);text-transform:uppercase;margin-top:2px;}
+  .breakdown{font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.7;}
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(33,28,21,.45);z-index:50;align-items:center;justify-content:center;padding:16px;}
+  .modal-overlay.show{display:flex;}
+  .modal-box{background:#fff;border-radius:14px;padding:22px;max-width:380px;width:100%;box-shadow:0 10px 40px rgba(0,0,0,.2);}
+  .modal-box h3{margin:0 0 4px;font-size:16px;font-family:'Sora',sans-serif;}
+  .modal-actions{display:flex;gap:10px;margin-top:6px;}
+  .modal-actions button.outline{flex:1;}
 </style>
 </head>
 <body>
@@ -62,10 +76,65 @@
         <div style="font-size:12.5px;color:var(--muted)">👀 Total site visits: <b id="visitCount" style="color:var(--ink)">—</b></div>
       </div>
       <div class="sub" style="margin-bottom:12px">Yahan har order turant dikhega, chahe customer ne WhatsApp par message bheja ho ya nahi. Tab khula rakhoge to naye order par beep + notification bhi aayega.</div>
+
+      <div id="orderStats" class="stat-row"></div>
+      <div id="orderBreakdown" class="breakdown"></div>
+
       <table>
-        <thead><tr><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Status</th><th>Actions</th></tr></thead>
-        <tbody id="orderRows"><tr><td colspan="6" style="color:var(--muted)">Loading…</td></tr></tbody>
+        <thead><tr><th>Date</th><th>Customer</th><th>Items</th><th>Total</th><th>Payment</th><th>Delivery</th><th>Status</th><th>Actions</th></tr></thead>
+        <tbody id="orderRows"><tr><td colspan="8" style="color:var(--muted)">Loading…</td></tr></tbody>
       </table>
+    </div>
+
+    <div id="confirmOrderModal" class="modal-overlay">
+      <div class="modal-box">
+        <h3>Order Confirm Karein</h3>
+        <div class="sub" style="margin-bottom:14px">Customer se baat karke payment aur delivery ka tareeka select karein.</div>
+        <label>Payment kaise hui / hogi? *</label>
+        <select id="modalPayment">
+          <option value="cod">Cash on Delivery</option>
+          <option value="store_cash">Store — Cash</option>
+          <option value="store_upi">Store — UPI</option>
+          <option value="store_card">Store — Card</option>
+          <option value="online_upi">Online UPI (advance)</option>
+        </select>
+        <label>Delivery kaise hogi? *</label>
+        <select id="modalDelivery">
+          <option value="pickup">Store Pickup</option>
+          <option value="courier">Courier</option>
+          <option value="delivery">Home Delivery</option>
+        </select>
+        <div class="modal-actions">
+          <button class="outline" id="modalCancelBtn">Band Karein</button>
+          <button id="modalConfirmBtn" style="flex:1">Confirm Order</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2 style="font-size:15px;margin:0 0 4px">🗂️ Shop by Category (Homepage Icons)</h2>
+      <div class="sub" style="margin-bottom:12px">Yeh homepage par icon-circle ke roop mein dikhenge (jaise Screen Guard, Data Cable, Charger, Earphones). Click karne par us category/type ke sabhi products dikh jaayenge.</div>
+      <input type="hidden" id="scId">
+      <div class="row">
+        <div><label>Category naam *</label><input id="scName" placeholder="e.g. Screen Guard"></div>
+        <div><label>Icon (emoji) — ya neeche image URL bharein</label><input id="scIcon" placeholder="e.g. 🛡️" maxlength="4"></div>
+        <div><label>Yeh kis category ke andar hai? *</label>
+          <select id="scParent"><option value="mobile">Mobile</option><option value="accessory">Accessory</option></select>
+        </div>
+      </div>
+      <label>Icon Image URL (optional — emoji ki jagah photo dikhani ho to yahan link daalein)</label>
+      <input id="scIconImage" placeholder="https://... (imgbb.com par photo upload karke link paste karein)">
+      <div class="sub" style="margin:-6px 0 12px">Agar dono bhare hain to Image ko priority milegi, emoji tab dikhega jab image na ho ya load na ho paaye.</div>
+      <div class="row">
+        <div><label>Type filter (optional — Product ke "Brand/Type" field se match hona chahiye)</label><input id="scTypeFilter" placeholder="e.g. Screen Guard (khaali chhodein to poori category dikhegi)"></div>
+        <div><label>Order (chhota number pehle aayega)</label><input id="scOrder" type="number" placeholder="1"></div>
+        <div><label><input type="checkbox" id="scActive" style="width:auto;margin-right:6px" checked>Active (homepage par dikhega)</label></div>
+      </div>
+      <div style="margin-top:10px">
+        <button id="scSaveBtn">Save Category</button>
+        <button class="outline" id="scCancelEdit" style="display:none">Cancel Edit</button>
+      </div>
+      <div id="scList" style="margin-top:16px"></div>
     </div>
 
     <div class="card">
@@ -218,6 +287,83 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
+/* ---------- Shop by Category (Homepage Icons) ---------- */
+let SHOP_CATS = [];
+db.collection('shopCategories').orderBy('order','asc').onSnapshot(snap=>{
+  SHOP_CATS = snap.docs.map(d=>({id:d.id, ...d.data()}));
+  renderShopCatList();
+}, err=>{
+  document.getElementById('scList').innerHTML = '<div class="sub" style="color:var(--red)">Categories load nahi ho payi: '+esc(err.message)+'</div>';
+});
+
+function renderShopCatList(){
+  const wrap = document.getElementById('scList');
+  if(!SHOP_CATS.length){ wrap.innerHTML = '<div class="sub">Koi category add nahi ki abhi tak.</div>'; return; }
+  wrap.innerHTML = SHOP_CATS.map(c=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #232323">
+      <div style="width:34px;height:34px;border-radius:50%;background:#111;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;overflow:hidden">${c.iconImage ? `<img src="${esc(c.iconImage)}" style="width:100%;height:100%;object-fit:cover">` : esc(c.icon||'📦')}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:13px">${esc(c.name)}</div>
+        <div class="sub" style="margin:2px 0 0">${esc(c.parent||'mobile')}${c.typeFilter ? ' · type: '+esc(c.typeFilter) : ''} · order ${c.order!=null?c.order:''}</div>
+      </div>
+      <span class="pill ${c.active?'in':'out'}">${c.active?'Active':'Hidden'}</span>
+      <button class="outline" data-scedit="${c.id}">Edit</button>
+      <button class="danger" data-scdel="${c.id}">Delete</button>
+    </div>
+  `).join('');
+  wrap.querySelectorAll('[data-scedit]').forEach(btn=>btn.onclick=()=>editShopCat(btn.dataset.scedit));
+  wrap.querySelectorAll('[data-scdel]').forEach(btn=>btn.onclick=()=>deleteShopCat(btn.dataset.scdel));
+}
+
+function editShopCat(id){
+  const c = SHOP_CATS.find(x=>x.id===id); if(!c) return;
+  document.getElementById('scId').value = c.id;
+  document.getElementById('scName').value = c.name||'';
+  document.getElementById('scIcon').value = c.icon||'';
+  document.getElementById('scIconImage').value = c.iconImage||'';
+  document.getElementById('scParent').value = c.parent||'mobile';
+  document.getElementById('scTypeFilter').value = c.typeFilter||'';
+  document.getElementById('scOrder').value = c.order!=null ? c.order : 1;
+  document.getElementById('scActive').checked = !!c.active;
+  document.getElementById('scCancelEdit').style.display = 'inline-block';
+  window.scrollTo({top:document.getElementById('scName').getBoundingClientRect().top + window.scrollY - 80, behavior:'smooth'});
+}
+document.getElementById('scCancelEdit').onclick = resetShopCatForm;
+function resetShopCatForm(){
+  document.getElementById('scId').value = '';
+  document.getElementById('scName').value = '';
+  document.getElementById('scIcon').value = '';
+  document.getElementById('scIconImage').value = '';
+  document.getElementById('scParent').value = 'mobile';
+  document.getElementById('scTypeFilter').value = '';
+  document.getElementById('scOrder').value = SHOP_CATS.length + 1;
+  document.getElementById('scActive').checked = true;
+  document.getElementById('scCancelEdit').style.display = 'none';
+}
+document.getElementById('scSaveBtn').onclick = async ()=>{
+  const name = document.getElementById('scName').value.trim();
+  const icon = document.getElementById('scIcon').value.trim();
+  const iconImage = document.getElementById('scIconImage').value.trim();
+  if(!name || (!icon && !iconImage)){ alert('Category naam aur (emoji ya image URL) mein se kam se kam ek zaroor bharein.'); return; }
+  const id = document.getElementById('scId').value.trim();
+  const data = {
+    name, icon, iconImage,
+    parent: document.getElementById('scParent').value,
+    typeFilter: document.getElementById('scTypeFilter').value.trim(),
+    order: Number(document.getElementById('scOrder').value)||1,
+    active: document.getElementById('scActive').checked
+  };
+  try{
+    if(id) await db.collection('shopCategories').doc(id).set(data, {merge:true});
+    else await db.collection('shopCategories').add(data);
+    resetShopCatForm();
+  }catch(err){ alert('Save fail hua: '+err.message); }
+};
+async function deleteShopCat(id){
+  if(!confirm('Yeh category delete karein?')) return;
+  try{ await db.collection('shopCategories').doc(id).delete(); }catch(err){ alert('Delete fail: '+err.message); }
+}
+
 /* ---------- Wholesale Platform Settings ---------- */
 db.collection('settings').doc('wholesaleAccess').get().then(doc=>{
   if(doc.exists){
@@ -292,6 +438,10 @@ function loadOrders(){
   }, err=>{ console.error('Orders load nahi ho paaye', err); });
 }
 
+const PAYMENT_LABELS = {cod:'COD', store_cash:'Store Cash', store_upi:'Store UPI', store_card:'Store Card', online_upi:'Online UPI'};
+const DELIVERY_LABELS = {pickup:'Pickup', courier:'Courier', delivery:'Home Delivery'};
+const STATUS_LABELS = {new:'New', confirmed:'Confirmed', delivered:'Delivered', cancelled:'Cancelled'};
+
 function renderOrders(){
   const tb = document.getElementById('orderRows');
   const newCount = ORDERS.filter(o=>o.status==='new').length;
@@ -299,29 +449,105 @@ function renderOrders(){
   if(newCount>0){ badge.style.display='inline-block'; badge.textContent = newCount + ' New'; }
   else{ badge.style.display='none'; }
 
-  if(!ORDERS.length){ tb.innerHTML = '<tr><td colspan="6" style="color:var(--muted)">Abhi tak koi order nahi aaya.</td></tr>'; return; }
+  renderOrderStats();
+
+  if(!ORDERS.length){ tb.innerHTML = '<tr><td colspan="8" style="color:var(--muted)">Abhi tak koi order nahi aaya.</td></tr>'; return; }
   tb.innerHTML = ORDERS.map(o=>{
     const items = (o.items||[]).map(i=>`${esc(i.name)} × ${i.qty}`).join(', ');
     const date = o.createdAt ? new Date(o.createdAt).toLocaleString('en-IN', {day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}) : '—';
-    const isNew = o.status === 'new';
+    const status = o.status || 'new';
+    const isNew = status === 'new';
+    let actions = '';
+    if(status === 'new'){
+      actions = `<button data-confirm="${o.id}">Confirm</button> <button class="danger" data-cancel="${o.id}">Cancel</button>`;
+    } else if(status === 'confirmed'){
+      actions = `<button data-deliver="${o.id}">Mark Delivered</button> <button class="danger" data-cancel="${o.id}">Cancel</button>`;
+    }
     return `
     <tr style="${isNew?'background:#FFF9E8':''}">
       <td>${date}</td>
       <td>${esc(o.customerName)}<br><span class="imp-sub">${esc(o.phone)}</span></td>
       <td style="max-width:220px">${items}${o.couponCode?`<br><span class="tag done">${esc(o.couponCode)} (−${fmt(o.discount||0)})</span>`:''}</td>
       <td>${fmt(o.total)}</td>
-      <td><span class="pill ${isNew?'out':'in'}">${isNew?'New':'Done'}</span></td>
+      <td>${o.paymentMode ? PAYMENT_LABELS[o.paymentMode]||o.paymentMode : '—'}</td>
+      <td>${o.deliveryType ? DELIVERY_LABELS[o.deliveryType]||o.deliveryType : '—'}</td>
+      <td><span class="pill ${status}">${STATUS_LABELS[status]||status}</span></td>
       <td class="actions">
-        ${isNew ? `<button data-done="${o.id}">Mark Done</button>` : ''}
+        ${actions}
         <a href="https://wa.me/${(o.phone||'').replace(/\D/g,'')}" target="_blank"><button class="outline">WhatsApp</button></a>
       </td>
     </tr>`;
   }).join('');
-  document.querySelectorAll('[data-done]').forEach(b=>b.onclick=()=>markOrderDone(b.dataset.done));
+  document.querySelectorAll('[data-confirm]').forEach(b=>b.onclick=()=>openConfirmModal(b.dataset.confirm));
+  document.querySelectorAll('[data-deliver]').forEach(b=>b.onclick=()=>markOrderDelivered(b.dataset.deliver));
+  document.querySelectorAll('[data-cancel]').forEach(b=>b.onclick=()=>cancelOrder(b.dataset.cancel));
 }
 
-async function markOrderDone(id){
-  try{ await db.collection('onlineOrders').doc(id).update({status:'done'}); }
+function renderOrderStats(){
+  const total = ORDERS.length;
+  const counts = {new:0, confirmed:0, delivered:0, cancelled:0};
+  const payCounts = {}; const delCounts = {};
+  let deliveredRevenue = 0;
+  ORDERS.forEach(o=>{
+    const s = o.status || 'new';
+    if(counts[s]===undefined) counts[s]=0;
+    counts[s]++;
+    if(s === 'delivered'){
+      deliveredRevenue += Number(o.total||0);
+      if(o.paymentMode) payCounts[o.paymentMode] = (payCounts[o.paymentMode]||0)+1;
+      if(o.deliveryType) delCounts[o.deliveryType] = (delCounts[o.deliveryType]||0)+1;
+    }
+  });
+  document.getElementById('orderStats').innerHTML = `
+    <div class="stat-box"><div class="n">${total}</div><div class="l">Total</div></div>
+    <div class="stat-box"><div class="n">${counts.new||0}</div><div class="l">New</div></div>
+    <div class="stat-box"><div class="n">${counts.confirmed||0}</div><div class="l">Confirmed</div></div>
+    <div class="stat-box"><div class="n">${counts.delivered||0}</div><div class="l">Delivered</div></div>
+    <div class="stat-box"><div class="n">${counts.cancelled||0}</div><div class="l">Cancelled</div></div>
+  `;
+  const payStr = Object.keys(payCounts).length ? Object.entries(payCounts).map(([k,v])=>`${PAYMENT_LABELS[k]||k}: <b>${v}</b>`).join(' &nbsp;·&nbsp; ') : '—';
+  const delStr = Object.keys(delCounts).length ? Object.entries(delCounts).map(([k,v])=>`${DELIVERY_LABELS[k]||k}: <b>${v}</b>`).join(' &nbsp;·&nbsp; ') : '—';
+  document.getElementById('orderBreakdown').innerHTML = `
+    <div>💰 Delivered orders ka revenue: <b>${fmt(deliveredRevenue)}</b></div>
+    <div>💳 Payment mode (delivered orders): ${payStr}</div>
+    <div>🚚 Delivery type (delivered orders): ${delStr}</div>
+  `;
+}
+
+let activeConfirmOrderId = null;
+function openConfirmModal(id){
+  activeConfirmOrderId = id;
+  document.getElementById('modalPayment').value = 'cod';
+  document.getElementById('modalDelivery').value = 'pickup';
+  document.getElementById('confirmOrderModal').classList.add('show');
+}
+document.getElementById('modalCancelBtn').onclick = ()=>{
+  activeConfirmOrderId = null;
+  document.getElementById('confirmOrderModal').classList.remove('show');
+};
+document.getElementById('modalConfirmBtn').onclick = async ()=>{
+  if(!activeConfirmOrderId) return;
+  const paymentMode = document.getElementById('modalPayment').value;
+  const deliveryType = document.getElementById('modalDelivery').value;
+  try{
+    await db.collection('onlineOrders').doc(activeConfirmOrderId).update({
+      status:'confirmed', paymentMode, deliveryType, confirmedAt: new Date().toISOString()
+    });
+    document.getElementById('confirmOrderModal').classList.remove('show');
+    activeConfirmOrderId = null;
+  }catch(err){ alert('Update fail hua: ' + err.message); }
+};
+
+async function markOrderDelivered(id){
+  if(!confirm('Yeh order deliver ho gaya hai — confirm karein?')) return;
+  try{ await db.collection('onlineOrders').doc(id).update({status:'delivered', deliveredAt: new Date().toISOString()}); }
+  catch(err){ alert('Update fail hua: ' + err.message); }
+}
+
+async function cancelOrder(id){
+  const reason = prompt('Cancel karne ki wajah (optional):', '');
+  if(reason === null) return; // user pressed Cancel on the prompt itself
+  try{ await db.collection('onlineOrders').doc(id).update({status:'cancelled', cancelReason: reason||'', cancelledAt: new Date().toISOString()}); }
   catch(err){ alert('Update fail hua: ' + err.message); }
 }
 
